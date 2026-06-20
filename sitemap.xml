@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+  
+  <!-- Главная страница симулятора -->
+  <url>
+    <loc>https://anti-ai-qwen-uav-simulator-lesson-1-nine.vercel.app/</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+    
+    <!-- Метаданные для поисковых систем -->
+    <xhtml:link rel="alternate" hreflang="ru" href="https://anti-ai-qwen-uav-simulator-lesson-1-nine.vercel.app/"/>
+    
+    <!-- Изображения -->
+    <image:image>
+      <image:loc>https://anti-ai-qwen-uav-simulator-lesson-1-nine.vercel.app/mechanic-workshop.jpg</image:loc>
+      <image:title>Мастерская механика БПЛА</image:title>
+      <image:caption>Интерактивный 3D-симулятор ремонта дронов</image:caption>
+    </image:image>
+    
+    <image:image>
+      <image:loc>https://anti-ai-qwen-uav-simulator-lesson-1-nine.vercel.app/favicon.ico</image:loc>
+      <image:title>Иконка проекта Механик БПЛА</image:title>
+    </image:image>
+  </url>
+  
+  <!-- Дополнительные страницы (если будут добавлены) -->
+  <!--
+  <url>
+    <loc>https://anti-ai-qwen-uav-simulator-lesson-1-nine.vercel.app/about.html</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://anti-ai-qwen-uav-simulator-lesson-1-nine.vercel.app/privacy.html</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  -->
+  
+</urlset>

@@ -1,0 +1,24 @@
+# robots.txt для Anti-AI Qwen Academy - Урок 14: Механик БПЛА
+# Симулятор ремонта дронов на Vercel
+
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /favicon.ico
+Allow: /mechanic-workshop.jpg
+Allow: /mechanic-theme.mp3
+
+# Запрет индексации служебных файлов Vercel
+Disallow: /_next/
+Disallow: /api/
+Disallow: /_vercel/
+
+# Sitemap
+Sitemap: https://anti-ai-qwen-uav-simulator-lesson-1-nine.vercel.app/sitemap.xml
+
+# Информация о проекте
+# Проект: Anti-AI Qwen Academy - Урок 14
+# Описание: Интерактивный 3D-симулятор ремонта БПЛА
+# Автор: Антон Анатольевич Кузнецов
+# Контакт: an.cf@yandex.ru
+# Сайт: https://ancf-hue.github.io/
