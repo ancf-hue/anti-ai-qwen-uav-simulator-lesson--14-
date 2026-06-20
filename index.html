@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=5.0, user-scalable=yes">
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<title>Урок 14: Механик БПЛА | Мастерская</title>
+<style>
+*{ box-sizing: border-box; margin: 0; padding: 0;}
+body{ 
+  overflow: hidden; 
+  font-family:'Segoe UI','Orbitron', monospace; 
+  background:#1a0f05; 
+  color:#ffe8cc;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+}
+
+/* ============ ФОН С АНИМИРОВАННЫМИ ОГНЯМИ ============ */
+body::before{
+  content:'';
+  position: fixed;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(255, 140, 0, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(255, 200, 50, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(255, 100, 0, 0.08) 0%, transparent 50%);
+  animation: bgPulse 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+@keyframes bgPulse{
+  0%, 100%{ opacity: 0.7; transform: scale(1);}
+  50%{ opacity: 1; transform: scale(1.1);}
+}
+
+/* ============ ЛОГОТИП ============ */
+.logo-header{ position: fixed; top: 20px; left: 20px; z-index: 1000; display: flex; align-items: center; gap: 10px; padding: 10px 16px; background: rgba(20, 10, 0, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 50px; border: 1px solid rgba(255, 200, 100, 0.3); box-shadow: 0 8px 32px rgba(255, 140, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);}
+.logo-header::before{ content:''; position: absolute; inset:-2px; background: linear-gradient(135deg,#ff8c00,#ffcc00,#ff6600,#ffaa00, #ff8c00); border-radius: 50px; z-index:-1; animation: gradientShift 5s ease infinite; background-size: 300% 300%; opacity: 0.8;}
+@keyframes gradientShift{ 0%, 100%{ background-position: 0% 50%;} 50%{ background-position: 100% 50%;}}
+.logo-header img{ width: 40px; height: 40px; border-radius: 10px; box-shadow: 0 0 15px rgba(255, 140, 0, 0.6);}
+.logo-text{ display: flex; flex-direction: column; gap: 2px;}
+.logo-main{ font-size: 13px; font-weight: 900; background: linear-gradient(135deg,#ffffff,#ffcc00,#ff8c00); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; white-space: nowrap;}
+.logo-sub{ font-size: 11px; color:#ffcc00; font-weight: bold; letter-spacing: 2px; text-shadow: 0 0 10px rgba(255, 200, 0, 0.6);}
+
+/* ============ ПРИВЕТСТВИЕ ============ */
+#intro-page{ position: fixed; inset: 0; background: radial-gradient(ellipse at center,#2a1a0a 0%,#1a0f05 50%,#0a0500 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 500; transition: opacity 0.8s ease; overflow-y: auto; padding: 80px 20px 20px;}
+#intro-page.hidden{ opacity: 0; pointer-events: none;}
+.intro-image{ width: 90%; max-width: 900px; border-radius: 20px; box-shadow: 0 0 60px rgba(255, 140, 0, 0.5), 0 0 100px rgba(255, 200, 50, 0.3); border: 3px solid rgba(255, 180, 50, 0.6); animation: imageGlow 4s ease-in-out infinite;}
+@keyframes imageGlow{
+  0%, 100%{ box-shadow: 0 0 40px rgba(255, 140, 0, 0.4), 0 0 80px rgba(255, 200, 50, 0.2);}
+  50%{ box-shadow: 0 0 60px rgba(255, 180, 0, 0.7), 0 0 120px rgba(255, 220, 100, 0.4);}
+}
+.intro-title{ margin-top: 30px; font-size: 42px; font-weight: 900; background: linear-gradient(135deg,#ffffff 0%,#ffcc00 50%,#ff8c00 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; text-align: center; letter-spacing: 3px; animation: titleShine 3s ease-in-out infinite; background-size: 200% 200%;}
+@keyframes titleShine{
+  0%, 100%{ background-position: 0% 50%;}
+  50%{ background-position: 100% 50%;}
+}
+.intro-subtitle{ margin-top: 10px; font-size: 20px; color:#ffcc00; text-align: center; letter-spacing: 5px; text-shadow: 0 0 20px rgba(255, 200, 0, 0.8);}
+.intro-desc{ margin-top: 20px; max-width: 600px; text-align: center; color:#d4b896; font-size: 14px; line-height: 1.6; padding: 0 20px; -webkit-user-select: text; user-select: text;}
+
+/* ============ 🎨 СТЕКЛЯННЫЕ 3D КНОПКИ УРОВНЕЙ ============ */
+.difficulty-selector{ 
+  margin-top: 40px; 
+  display: flex; 
+  gap: 30px; 
+  flex-wrap: wrap; 
+  justify-content: center;
+  perspective: 1000px;
+}
+
+.difficulty-btn{ 
+  position: relative;
+  padding: 25px 45px; 
+  font-size: 18px; 
+  font-weight: 900; 
+  border: none; 
+  border-radius: 25px; 
+  color: white; 
+  cursor: pointer; 
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+  text-transform: uppercase; 
+  letter-spacing: 2px; 
+  min-width: 220px;
+  font-family: 'Segoe UI', 'Orbitron', monospace;
+  background: 
+    linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.25) 0%, 
+      rgba(255, 255, 255, 0.08) 40%, 
+      rgba(255, 255, 255, 0.02) 60%, 
+      rgba(255, 255, 255, 0.15) 100%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.5),
+    0 0 30px var(--glow-color, rgba(255, 140, 0, 0.3)),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -2px 10px rgba(0, 0, 0, 0.3);
+  transform: translateZ(0) rotateX(0);
+  transform-style: preserve-3d;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.difficulty-btn::before{ 
+  content:''; 
+  position: absolute; 
+  inset:-2px; 
+  background: linear-gradient(135deg, 
+    var(--color-1) 0%, 
+    var(--color-2) 25%, 
+    var(--color-3) 50%, 
+    var(--color-2) 75%, 
+    var(--color-1) 100%);
+  border-radius: 25px; 
+  z-index:-1; 
+  animation: borderShimmer 3s linear infinite; 
+  background-size: 300% 300%;
+  opacity: 0.9;
+}
+@keyframes borderShimmer{ 
+  0%{ background-position: 0% 50%;} 
+  100%{ background-position: 300% 50%;} 
+}
+
+.difficulty-btn::after{
+  content:'';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.4) 50%, 
+    transparent 100%);
+  transform: skewX(-25deg);
+  transition: left 0.8s ease;
+  pointer-events: none;
+}
+
+/* Цветовые схемы для уровней */
+.difficulty-btn.easy{ 
+  --color-1: #48bb78; 
+  --color-2: #68d391; 
+  --color-3: #9ae6b4;
+  --glow-color: rgba(72, 187, 120, 0.6);
+  background: 
+    linear-gradient(135deg, 
+      rgba(72, 187, 120, 0.3) 0%, 
+      rgba(104, 211, 145, 0.15) 50%, 
+      rgba(72, 187, 120, 0.25) 100%),
+    linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.02));
+}
+.difficulty-btn.medium{ 
+  --color-1: #ecc94b; 
+  --color-2: #f6e05e; 
+  --color-3: #fefcbf;
+  --glow-color: rgba(236, 201, 75, 0.6);
+  background: 
+    linear-gradient(135deg, 
+      rgba(236, 201, 75, 0.3) 0%, 
+      rgba(246, 224, 94, 0.15) 50%, 
+      rgba(236, 201, 75, 0.25) 100%),
+    linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.02));
+}
+.difficulty-btn.hard{ 
+  --color-1: #e53e3e; 
+  --color-2: #fc8181; 
+  --color-3: #feb2b2;
+  --glow-color: rgba(229, 62, 62, 0.6);
+  background: 
+    linear-gradient(135deg, 
+      rgba(229, 62, 62, 0.3) 0%, 
+      rgba(252, 129, 129, 0.15) 50%, 
+      rgba(229, 62, 62, 0.25) 100%),
+    linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.02));
+}
+
+.difficulty-btn:hover{ 
+  transform: translateY(-5px) translateZ(20px) scale(1.05);
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.6),
+    0 0 50px var(--glow-color),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -2px 10px rgba(0, 0, 0, 0.3);
+  animation: none;
+}
+.difficulty-btn:hover::after{ left: 100%;}
+
+.difficulty-btn:active{ 
+  transform: translateY(2px) translateZ(0) scale(0.98);
+  box-shadow: 
+    0 5px 20px rgba(0, 0, 0, 0.5),
+    0 0 20px var(--glow-color),
+    inset 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.difficulty-btn{ animation: btnGlow 2.5s ease-in-out infinite;}
+@keyframes btnGlow{
+  0%, 100%{ 
+    box-shadow: 
+      0 10px 40px rgba(0, 0, 0, 0.5),
+      0 0 30px var(--glow-color),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4),
+      inset 0 -2px 10px rgba(0, 0, 0, 0.3);
+  }
+  50%{ 
+    box-shadow: 
+      0 10px 40px rgba(0, 0, 0, 0.5),
+      0 0 50px var(--glow-color),
+      0 0 80px var(--glow-color),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      inset 0 -2px 10px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* ============ СТЕКЛЯННАЯ ПАНЕЛЬ ИНФО ============ */
+.difficulty-info{ 
+  margin-top: 30px; 
+  padding: 25px; 
+  background: 
+    linear-gradient(135deg, 
+      rgba(255, 140, 0, 0.08) 0%, 
+      rgba(255, 200, 50, 0.04) 100%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 25px; 
+  max-width: 600px; 
+  text-align: center; 
+  border: 1px solid rgba(255, 180, 50, 0.3);
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.4),
+    0 0 30px rgba(255, 140, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -2px 10px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+.difficulty-info::before{
+  content:'';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 200, 100, 0.1), 
+    transparent);
+  animation: infoShine 6s linear infinite;
+}
+@keyframes infoShine{
+  0%{ left: -100%;}
+  100%{ left: 100%;}
+}
+.difficulty-info h3{ color: #ffcc00; margin-bottom: 15px; font-size: 20px; text-shadow: 0 0 15px rgba(255, 200, 0, 0.6); position: relative; z-index: 1;}
+.difficulty-info p{ color: #d4b896; margin: 8px 0; font-size: 13px; line-height: 1.6; position: relative; z-index: 1; -webkit-user-select: text; user-select: text;}
+
+/* ============ СТРАНИЦА СИМУЛЯТОРА ============ */
+#simulator-page{ position: fixed; inset: 0; opacity: 0; pointer-events: none; transition: opacity 1s ease; background: #1a0f05;}
+#simulator-page.active{ opacity: 1; pointer-events: all;}
+
+#stats-panel{ position: fixed; top: 90px; left: 20px; z-index: 100; background: rgba(20, 10, 0, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 20px; padding: 8px 15px; border: 1px solid rgba(255, 140, 0, 0.3); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15); pointer-events: none; font-family: monospace;}
+.stats{ font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap;}
+.stat{ background: rgba(40, 20, 5, 0.6); padding: 3px 10px; border-radius: 20px; border: 1px solid rgba(255, 140, 0, 0.4); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);}
+
+#task-panel{ position: fixed; top: 140px; left: 20px; z-index: 100; background: rgba(20, 10, 0, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 20px; padding: 10px 15px; border: 1px solid rgba(255, 140, 0, 0.3); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15); pointer-events: none; font-family: monospace; font-size: 12px; color:#d4b896; max-width: 260px;}
+#task-panel .task-title{ color: #ffcc00; font-weight: bold; font-size: 14px; margin-bottom: 8px; text-shadow: 0 0 10px rgba(255, 200, 0, 0.5);}
+.task-item{ padding: 4px 0; display: flex; align-items: center; gap: 6px; font-size: 11px;}
+.task-item.done{ color: #55ff55; text-decoration: line-through; opacity: 0.6;}
+.task-item .dot{ width: 8px; height: 8px; border-radius: 50%; background: #ff3300; flex-shrink: 0; box-shadow: 0 0 8px #ff3300;}
+.task-item.done .dot{ background: #55ff55; box-shadow: 0 0 8px #55ff55;}
+
+/* ============ СТЕКЛЯННАЯ ПАНЕЛЬ ИНСТРУМЕНТОВ ============ */
+#tool-panel{ 
+  position: fixed; 
+  top: 50%; 
+  right: 20px; 
+  transform: translateY(-50%); 
+  z-index: 100; 
+  background: 
+    linear-gradient(135deg, 
+      rgba(40, 20, 5, 0.7) 0%, 
+      rgba(20, 10, 0, 0.8) 100%);
+  backdrop-filter: blur(20px) saturate(180%); 
+  -webkit-backdrop-filter: blur(20px) saturate(180%); 
+  border-radius: 25px; 
+  padding: 15px; 
+  border: 1px solid rgba(255, 140, 0, 0.4); 
+  display: flex; 
+  flex-direction: column; 
+  gap: 10px;
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.5),
+    0 0 30px rgba(255, 140, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.tool-btn{ 
+  width: 75px; 
+  height: 75px; 
+  border-radius: 18px; 
+  background: 
+    linear-gradient(135deg, 
+      rgba(60, 30, 10, 0.6) 0%, 
+      rgba(30, 15, 5, 0.8) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 140, 0, 0.3); 
+  cursor: pointer; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+  color: #d4b896; 
+  font-size: 10px; 
+  font-weight: bold; 
+  font-family: monospace;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    0 4px 15px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.3);
+  -webkit-user-select: none;
+  user-select: none;
+}
+.tool-btn .icon{ font-size: 28px; margin-bottom: 2px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));}
+.tool-btn:hover{ 
+  border-color: #ff8c00; 
+  transform: scale(1.08) translateZ(10px);
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(255, 140, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.tool-btn.active{ 
+  border-color: #ffcc00; 
+  background: 
+    linear-gradient(135deg, 
+      rgba(255, 140, 0, 0.4) 0%, 
+      rgba(255, 200, 50, 0.2) 100%);
+  color: white; 
+  box-shadow: 
+    0 8px 30px rgba(255, 140, 0, 0.6),
+    0 0 40px rgba(255, 200, 50, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -2px 10px rgba(0, 0, 0, 0.2);
+  animation: toolPulse 1.5s ease-in-out infinite;
+}
+@keyframes toolPulse{
+  0%, 100%{ box-shadow: 0 8px 30px rgba(255, 140, 0, 0.6), 0 0 40px rgba(255, 200, 50, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);}
+  50%{ box-shadow: 0 8px 30px rgba(255, 140, 0, 0.8), 0 0 60px rgba(255, 200, 50, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.5);}
+}
+
+.tool-btn::before{
+  content:'';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transform: skewX(-25deg);
+  transition: left 0.6s ease;
+}
+.tool-btn:hover::before{ left: 100%;}
+
+#controls-hint{ position: fixed; bottom: 20px; left: 20px; background: rgba(20, 10, 0, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); padding: 8px 14px; border-radius: 15px; font-size: 11px; pointer-events: none; font-family: monospace; color:#d4b896; z-index: 100; border: 1px solid rgba(255, 140, 0, 0.3); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15); line-height: 1.6;}
+
+#diagnosis-panel{ position: fixed; top: 20px; right: 20px; background: rgba(20, 10, 0, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); padding: 12px 20px; border-radius: 20px; text-align: center; border: 1px solid rgba(255, 140, 0, 0.4); pointer-events: none; font-family: monospace; min-width: 170px; z-index: 100; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 140, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);}
+#diagnosis-counter{ font-size: 36px; font-weight: bold; color:#ffcc00; text-shadow: 0 0 15px rgba(255, 200, 0, 0.8);}
+
+.lesson-badge{ position: fixed; bottom: 20px; right: 20px; background: rgba(20, 10, 0, 0.8); backdrop-filter: blur(16px); padding: 5px 12px; border-radius: 20px; font-size: 11px; color:#ffcc00; pointer-events: none; font-family: monospace; z-index: 100; border: 1px solid rgba(255, 140, 0, 0.3); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);}
+
+/* ============ СТЕКЛЯННЫЕ КНОПКИ УПРАВЛЕНИЯ ============ */
+#resetBtn, #exitMenuBtn{ 
+  position: fixed; 
+  bottom: 130px; 
+  z-index: 9999; 
+  border: none; 
+  padding: 12px 35px; 
+  border-radius: 40px; 
+  font-weight: bold; 
+  font-family: monospace; 
+  cursor: pointer; 
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+  font-size: 14px; 
+  color: white;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  overflow: hidden;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  -webkit-user-select: none;
+  user-select: none;
+}
+#resetBtn{ 
+  left: calc(50% - 160px); 
+  background: 
+    linear-gradient(135deg, 
+      rgba(255, 140, 0, 0.4) 0%, 
+      rgba(255, 200, 50, 0.2) 100%);
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(255, 140, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+#exitMenuBtn{ 
+  left: calc(50% + 10px); 
+  background: 
+    linear-gradient(135deg, 
+      rgba(204, 51, 51, 0.4) 0%, 
+      rgba(136, 34, 34, 0.3) 100%);
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(204, 51, 51, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+#resetBtn:hover, #exitMenuBtn:hover{ 
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 
+    0 12px 35px rgba(0, 0, 0, 0.6),
+    0 0 40px var(--glow-color, rgba(255, 140, 0, 0.6)),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+#resetBtn::before, #exitMenuBtn::before{
+  content:'';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transform: skewX(-25deg);
+  transition: left 0.6s ease;
+}
+#resetBtn:hover::before, #exitMenuBtn:hover::before{ left: 100%;}
+
+/* ============ УВЕДОМЛЕНИЯ ============ */
+#notification{ position: fixed; top: 200px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg,#ff8c00,#cc6600); color: white; padding: 12px 28px; border-radius: 30px; font-weight: bold; font-family: monospace; z-index: 9999; opacity: 0; transition: opacity 0.3s, top 0.3s; white-space: nowrap; font-size: 14px; pointer-events: none; backdrop-filter: blur(10px); box-shadow: 0 8px 32px rgba(255, 140, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); max-width: 90%; text-align: center;}
+#notification.show{ opacity: 1; top: 220px;}
+#notification.success{ background: linear-gradient(135deg,#55ff55,#22aa22); box-shadow: 0 8px 32px rgba(85, 255, 85, 0.5);}
+#notification.hit{ background: linear-gradient(135deg,#ff3300,#cc2200); box-shadow: 0 8px 32px rgba(255, 51, 0, 0.5);}
+#notification.info{ background: linear-gradient(135deg,#4a8fff,#2266cc); box-shadow: 0 8px 32px rgba(74, 143, 255, 0.5);}
+
+/* ============ МОДАЛЬНОЕ ОКНО ПОБЕДЫ ============ */
+.victory-modal{ position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(15px); z-index: 10000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.5s ease;}
+.victory-modal.show{ opacity: 1; visibility: visible;}
+.victory-content{ 
+  background: 
+    linear-gradient(135deg, 
+      rgba(60, 30, 10, 0.8) 0%, 
+      rgba(30, 15, 5, 0.9) 100%);
+  backdrop-filter: blur(20px);
+  border-radius: 30px; 
+  padding: 50px; 
+  text-align: center; 
+  border: 2px solid rgba(255, 200, 50, 0.5);
+  max-width: 500px; 
+  margin: 20px;
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    0 0 80px rgba(255, 140, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -2px 15px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+.victory-content::before{
+  content:'';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255, 200, 50, 0.1), transparent);
+  animation: victoryShine 4s linear infinite;
+}
+@keyframes victoryShine{
+  0%{ transform: rotate(0deg);}
+  100%{ transform: rotate(360deg);}
+}
+.victory-content h2{ font-size: 48px; color:#ffcc00; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 3px; text-shadow: 0 0 20px rgba(255, 200, 0, 0.8); position: relative; z-index: 1;}
+.victory-content p{ font-size: 18px; color:#ffe8cc; margin: 20px 0; line-height: 1.6; position: relative; z-index: 1; -webkit-user-select: text; user-select: text;}
+.victory-stats{ 
+  background: rgba(0, 0, 0, 0.5); 
+  border-radius: 20px; 
+  padding: 20px; 
+  margin: 20px 0; 
+  font-size: 20px;
+  border: 1px solid rgba(255, 140, 0, 0.3);
+  position: relative;
+  z-index: 1;
+}
+.victory-stats span{ color:#ffcc00; font-size: 32px; font-weight: bold; text-shadow: 0 0 15px rgba(255, 200, 0, 0.6);}
+.restart-game-btn, .exit-game-btn{ 
+  border: none; 
+  padding: 15px 40px; 
+  border-radius: 50px; 
+  font-size: 18px; 
+  font-weight: bold; 
+  color: white; 
+  cursor: pointer; 
+  margin: 10px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  -webkit-user-select: none;
+  user-select: none;
+}
+.restart-game-btn{ 
+  background: linear-gradient(135deg, rgba(255, 140, 0, 0.5), rgba(204, 102, 0, 0.4));
+  border: 1px solid rgba(255, 200, 50, 0.4);
+}
+.exit-game-btn{ 
+  background: linear-gradient(135deg, rgba(204, 51, 51, 0.5), rgba(136, 34, 34, 0.4));
+  border: 1px solid rgba(255, 100, 100, 0.4);
+}
+.restart-game-btn:hover, .exit-game-btn:hover{
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 
+    0 12px 35px rgba(0, 0, 0, 0.6),
+    0 0 40px rgba(255, 140, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* ============ ПОДДЕРЖКА ============ */
+.support-container{ position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); z-index: 50; max-width: 600px; width: 90%; pointer-events: auto;}
+.support-block{ 
+  background: 
+    linear-gradient(135deg, 
+      rgba(60, 30, 10, 0.3) 0%, 
+      rgba(30, 15, 5, 0.5) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px; 
+  padding: 10px 16px; 
+  border: 1px solid rgba(255, 140, 0, 0.3); 
+  text-align: center; 
+  font-size: 11px; 
+  color:#d4b896;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+.support-block strong{ color:#ffdd99;}
+.support-block a{ color:#ffaa33; text-decoration: none; font-weight: bold;}
+.phone-row{ display: inline-flex; align-items: center; gap: 8px; margin: 4px 0;}
+.phone-number{ font-family:'Courier New', monospace; color: white; font-weight: bold; background: rgba(0,0,0,0.4); padding: 3px 10px; border-radius: 15px; border: 1px solid rgba(255, 140, 0, 0.4); -webkit-user-select: text; user-select: text;}
+.copy-btn{ 
+  background: linear-gradient(135deg, rgba(255, 140, 0, 0.5), rgba(204, 102, 0, 0.4));
+  backdrop-filter: blur(10px);
+  color: white; 
+  padding: 4px 12px; 
+  border-radius: 20px; 
+  font-size: 10px; 
+  font-weight: bold; 
+  border: 1px solid rgba(255, 200, 50, 0.4);
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  -webkit-user-select: none;
+  user-select: none;
+}
+.copy-btn:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 140, 0, 0.5);
+}
+.copy-btn.copied{ background: linear-gradient(135deg,#55ff55,#22aa22)!important;}
+
+#cursor-tool{ position: fixed; pointer-events: none; z-index: 9998; font-size: 32px; opacity: 0; transition: opacity 0.2s; transform: translate(-50%, -50%); filter: drop-shadow(0 0 10px rgba(255, 140, 0, 0.8));}
+#cursor-tool.active{ opacity: 1;}
+
+@media(max-width: 700px){
+ .logo-header{ padding: 8px 12px; gap: 8px;}
+ .logo-header img{ width: 32px; height: 32px;}
+ .logo-main{ font-size: 11px;}
+ .logo-sub{ font-size: 9px;}
+ .intro-title{ font-size: 28px;}
+ .intro-subtitle{ font-size: 14px;}
+ .difficulty-btn{ padding: 20px 30px; font-size: 16px; min-width: 180px;}
+ .victory-content{ padding: 30px;}
+ .victory-content h2{ font-size: 32px;}
+ #resetBtn, #exitMenuBtn{ bottom: 100px; padding: 10px 25px; font-size: 12px;}
+ #resetBtn{ left: calc(50% - 120px);}
+ #exitMenuBtn{ left: calc(50% + 10px);}
+ #tool-panel{ right: 10px; padding: 10px;}
+ .tool-btn{ width: 60px; height: 60px;}
+ .tool-btn .icon{ font-size: 24px;}
+ #controls-hint{ display: none;}
+}
+</style>
+</head>
+<body>
+
+<div class="logo-header">
+  <img id="logoImg" src="favicon.ico" alt="МЕХАНИК">
+  <div class="logo-text">
+    <div class="logo-main">Qwen | Урок 14: Механик</div>
+    <div class="logo-sub">🔧 МАСТЕРСКАЯ БПЛА</div>
+  </div>
+</div>
+
+<div id="intro-page">
+  <img src="mechanic-workshop.jpg" alt="Мастерская механика" class="intro-image" onerror="this.style.display='none'">
+  <h1 class="intro-title">МЕХАНИК БПЛА</h1>
+  <div class="intro-subtitle">Qwen · АНТИ-ИИ АКАДЕМИЯ · УРОК 14</div>
+  <div class="intro-desc">
+    Настоящий техник по ремонту дронов! Получите повреждённый БПЛА, 
+    осмотрите его, найдите неисправности, выберите правильные инструменты 
+    и выполните профессиональный ремонт. После этого проведите тестовый полёт!
+  </div>
+  
+  <div class="difficulty-selector">
+    <button class="difficulty-btn easy" onclick="startWorkshop('easy')">🟢 СТАЖЁР<br><small style="font-size:11px;opacity:0.8;">3 поломки</small></button>
+    <button class="difficulty-btn medium" onclick="startWorkshop('medium')">🟡 ТЕХНИК<br><small style="font-size:11px;opacity:0.8;">5 поломок</small></button>
+    <button class="difficulty-btn hard" onclick="startWorkshop('hard')">🔴 МАСТЕР<br><small style="font-size:11px;opacity:0.8;">7 поломок</small></button>
+  </div>
+  
+  <div class="difficulty-info">
+    <h3>🔧 Инструменты механика:</h3>
+    <p>🔧 <strong>Отвёртка</strong> — пропеллеры, винты, антенна</p>
+    <p>🔥 <strong>Паяльник</strong> — моторы, LED, плата PCB</p>
+    <p>🔑 <strong>Ключ</strong> — камера, аккумулятор</p>
+    <p>📏 <strong>Мультиметр</strong> — диагностика цепи</p>
+    <p>🛠️ <strong>Плоскогубцы</strong> — мелкие детали, провода</p>
+  </div>
+</div>
+
+<div id="simulator-page">
+  <div id="stats-panel">
+    <div class="stats">
+      <div class="stat">🔧 Починено: <span id="repaired-count">0</span>/<span id="total-damage">0</span></div>
+      <div class="stat">⏱️ Время: <span id="mission-timer">0</span>с</div>
+      <div class="stat">⚡ Точность: <span id="accuracy">100</span>%</div>
+    </div>
+  </div>
+
+  <div id="task-panel">
+    <div class="task-title">📋 ЗАДАНИЯ РЕМОНТА:</div>
+    <div id="task-list"></div>
+  </div>
+
+  <div id="tool-panel">
+    <div class="tool-btn" data-tool="screwdriver" onclick="selectTool('screwdriver')">
+      <div class="icon">🔧</div>
+      <div>ОТВЁРТКА</div>
+    </div>
+    <div class="tool-btn" data-tool="soldering" onclick="selectTool('soldering')">
+      <div class="icon">🔥</div>
+      <div>ПАЯЛЬНИК</div>
+    </div>
+    <div class="tool-btn" data-tool="wrench" onclick="selectTool('wrench')">
+      <div class="icon">🔑</div>
+      <div>КЛЮЧ</div>
+    </div>
+    <div class="tool-btn" data-tool="multimeter" onclick="selectTool('multimeter')">
+      <div class="icon">📏</div>
+      <div>МУЛЬТИМЕТР</div>
+    </div>
+    <div class="tool-btn" data-tool="pliers" onclick="selectTool('pliers')">
+      <div class="icon">🛠️</div>
+      <div>ПЛОСКОГУБЦЫ</div>
+    </div>
+  </div>
+
+  <div id="diagnosis-panel">
+    🔍 ДИАГНОСТИКА<br>
+    <span id="diagnosis-counter">0</span> / <span id="diagnosis-total">0</span><br>
+    <span style="font-size:11px;">🖱️ Вращайте дрон мышкой</span>
+  </div>
+
+  <div id="controls-hint">
+    🖱️ ЛКМ + движение — вращать дрон<br>
+    🖱️ Колесо — приближение/отдаление<br>
+    📱 1 палец — вращение, 2 пальца — зум<br>
+    🔧 Выберите инструмент справа<br>
+    🎯 Кликните по повреждённой детали
+  </div>
+
+  <div class="lesson-badge">🔧 ЗАДАНИЕ: Отремонтировать БПЛА</div>
+
+  <button id="resetBtn">🔄 Перезапустить</button>
+  <button id="exitMenuBtn">🚪 Выйти в меню</button>
+
+  <div class="support-container">
+    <div class="support-block">
+      <strong>🤝 ПОДДЕРЖАТЬ ПРОЕКТ</strong><br>💙<br>
+      Приложение бесплатное. Было и останется.<br><br>
+      Если проект помог вам или вашим близким — можете поддержать разработку добровольным переводом.<br><br>
+      📱 <strong>ПЕРЕВОД ПО НОМЕРУ ТЕЛЕФОНА:</strong><br>
+      <div class="phone-row">
+        <span class="phone-number" id="phoneNumber">8-920-227-56-76</span>
+        <button class="copy-btn" id="copyPhoneBtn">📋 Копировать номер</button>
+      </div>
+      ✅ Деньги придут мгновенно. Без комиссии. Безопасно.<br><br>
+      ❤️ Спасибо за поддержку! ❤️<br><br>
+      🌟 👉 <a href="https://ancf-hue.github.io/" target="_blank">Каталог бесплатных офлайн-приложений Anti-AI Shield.</a>
+    </div>
+  </div>
+</div>
+
+<div id="cursor-tool"></div>
+
+<div id="notification"></div>
+
+<div id="victoryModal" class="victory-modal">
+  <div class="victory-content">
+    <h2>🏆 РЕМОНТ ЗАВЕРШЁН! 🏆</h2>
+    <p>Отличная работа, механик!<br>Дрон готов к полёту!</p>
+    <div class="victory-stats">
+      Починено: <span id="victoryRepaired">0</span> деталей 🔧<br>
+      Время: <span id="victoryTime">0</span>с ⏱️<br>
+      Точность: <span id="victoryAccuracy">100</span>% ⚡<br>
+      Уровень: <span id="victoryDifficulty">-</span>
+    </div>
+    <p>Настоящий мастер своего дела! 🔧</p>
+    <button class="restart-game-btn" onclick="fullRestart()">🔄 НОВЫЙ ДРОН</button>
+    <button class="exit-game-btn" onclick="exitToMenu()">🚪 В МЕНЮ</button>
+  </div>
+</div>
+
+<audio id="bg-music" loop>
+  <source src="mechanic-theme.mp3" type="audio/mpeg">
+</audio>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const DEFAULT_CONFIG = {
+  CAMERA_LERP: 0.08, LOW_END_CORES: 4, MAX_PIXEL_RATIO: 2,
+  ROTATE_SPEED: 0.008, ZOOM_SPEED: 0.5, MIN_ZOOM: 3, MAX_ZOOM: 10,
+  DEFAULT_ZOOM: 6, DAMAGE_BLINK_SPEED: 0.005
+};
+
+const DIFFICULTY_CONFIG = {
+  easy: { DAMAGE_COUNT: 3, name: 'Стажёр', color: '#48bb78', damagePool: ['propeller', 'arm', 'led'] },
+  medium: { DAMAGE_COUNT: 5, name: 'Техник', color: '#ecc94b', damagePool: ['propeller', 'arm', 'led', 'motor', 'camera'] },
+  hard: { DAMAGE_COUNT: 7, name: 'Мастер', color: '#e53e3e', damagePool: ['propeller', 'arm', 'led', 'motor', 'camera', 'pcb', 'antenna'] }
+};
+
+const DAMAGE_TYPES = {
+  propeller: { name: 'Сломан пропеллер', tool: 'screwdriver', icon: '🌀', description: 'Заменить пропеллер' },
+  arm: { name: 'Разболтана рама', tool: 'screwdriver', icon: '🔩', description: 'Затянуть винты рамы' },
+  led: { name: 'Сгорел LED', tool: 'soldering', icon: '💡', description: 'Перепаять LED' },
+  motor: { name: 'Сгорел мотор', tool: 'soldering', icon: '⚙️', description: 'Заменить мотор' },
+  camera: { name: 'Сбита камера', tool: 'wrench', icon: '📷', description: 'Откалибровать FPV-камеру' },
+  pcb: { name: 'Повреждена PCB', tool: 'soldering', icon: '🔌', description: 'Перепаять плату' },
+  antenna: { name: 'Сломана антенна', tool: 'pliers', icon: '📡', description: 'Заменить антенну' }
+};
+
+let CONFIG = {...DEFAULT_CONFIG};
+let currentDifficulty = 'easy';
+
+const state = {
+  animationId: null, simulatorInitialized: false, gameCompleted: false, missionTime: 0,
+  timerInterval: null, damages: [], repairedCount: 0, totalClicks: 0, correctClicks: 0,
+  selectedTool: null, isDragging: false, mouseDownX: 0, mouseDownY: 0, lastMouseX: 0, lastMouseY: 0,
+  droneRotationY: 0, droneRotationX: 0, cameraDistance: 6,
+  mousePos: new THREE.Vector2(), raycaster: new THREE.Raycaster(),
+  // Touch
+  touchStartX: 0, touchStartY: 0, touchLastX: 0, touchLastY: 0,
+  isTouchDragging: false, touchMoved: false,
+  pinchStartDistance: 0, isPinching: false
+};
+
+let scene, camera, renderer, droneGroup;
+let isLowEnd = false;
+let audioCtx = null;
+let notifTimeout = null;
+let damageIndicators = [];
+let armsList = [];
+
+function checkWebGL(){
+  try{
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    return !!gl;
+  } catch(e){ return false; }
+}
+
+(function setupFavicon(){
+  const img = document.getElementById('logoImg');
+  const fallbackSVG = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#ff8c00"/><text x="50" y="70" font-size="60" text-anchor="middle" fill="white">🔧</text></svg>');
+  let tried = false;
+  img.onerror = function(){ if(!tried){ tried = true; img.src = fallbackSVG; } else { img.onerror = null; } };
+})();
+
+function copyPhone(){
+  const phone = document.getElementById('phoneNumber').innerText;
+  const btn = document.getElementById('copyPhoneBtn');
+  if(navigator.clipboard && navigator.clipboard.writeText && window.isSecureContext){
+    navigator.clipboard.writeText(phone).then(() => showCopySuccess(btn)).catch(() => fallbackCopy(phone, btn));
+  } else fallbackCopy(phone, btn);
+}
+function fallbackCopy(text, btn){
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position='fixed'; ta.style.opacity='0'; ta.style.left='-9999px';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try{ document.execCommand('copy'); showCopySuccess(btn); } catch(e){ alert('Номер: ' + text); }
+  document.body.removeChild(ta);
+}
+function showCopySuccess(btn){
+  btn.classList.add('copied'); btn.innerText = '✅ Скопировано!';
+  setTimeout(() => { btn.classList.remove('copied'); btn.innerText = '📋 Копировать номер'; }, 2000);
+}
+document.getElementById('copyPhoneBtn').addEventListener('click', copyPhone);
+
+async function startAudio(){
+  const music = document.getElementById('bg-music');
+  if(music.paused){ music.volume = 0.4; music.play().catch(e => console.log('🎵 Автозапуск заблокирован:', e.message)); }
+}
+
+function ensureAudio(){
+  if(!audioCtx){ try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){ return false; } }
+  if(audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+  return true;
+}
+
+function playSound(freq, duration, type = 'square', volume = 0.08){
+  if(!ensureAudio()) return;
+  try{
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type; osc.frequency.value = freq;
+    gain.gain.setValueAtTime(volume, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(now); osc.stop(now + duration);
+  } catch(e){}
+}
+
+const SFX = {
+  repair: () => { playSound(600, 0.1, 'sine', 0.12); setTimeout(() => playSound(900, 0.15, 'sine', 0.1), 80); setTimeout(() => playSound(1200, 0.2, 'sine', 0.08), 160); },
+  wrong: () => { playSound(200, 0.2, 'sawtooth', 0.1); playSound(150, 0.3, 'square', 0.08); },
+  select: () => { playSound(800, 0.05, 'sine', 0.1); },
+  victory: () => { playSound(523, 0.15, 'sine', 0.12); setTimeout(() => playSound(659, 0.15, 'sine', 0.12), 150); setTimeout(() => playSound(784, 0.15, 'sine', 0.12), 300); setTimeout(() => playSound(1047, 0.3, 'sine', 0.15), 450); },
+  tool: () => { playSound(400, 0.08, 'triangle', 0.08); }
+};
+
+function showNotification(text, type = ''){
+  const n = document.getElementById('notification');
+  if(!n) return;
+  n.innerText = text;
+  n.className = 'show ' + type;
+  if(notifTimeout) clearTimeout(notifTimeout);
+  notifTimeout = setTimeout(() => { n.className = ''; }, 2500);
+}
+
+function resetToolSelection(){
+  state.selectedTool = null;
+  document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+  const cursor = document.getElementById('cursor-tool');
+  cursor.classList.remove('active');
+  cursor.innerText = '';
+}
+
+function selectTool(toolName){
+  state.selectedTool = toolName;
+  document.querySelectorAll('.tool-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tool === toolName);
+  });
+  const cursor = document.getElementById('cursor-tool');
+  const icons = { screwdriver: '🔧', soldering: '🔥', wrench: '🔑', multimeter: '📏', pliers: '🛠️' };
+  cursor.innerText = icons[toolName] || '';
+  cursor.classList.add('active');
+  SFX.tool();
+}
+
+function startWorkshop(difficulty){
+  currentDifficulty = difficulty;
+  CONFIG = {...DEFAULT_CONFIG};
+  startAudio();
+  document.getElementById('intro-page').classList.add('hidden');
+  setTimeout(() => {
+    document.getElementById('simulator-page').classList.add('active');
+    if(!state.simulatorInitialized){ initWorkshop(); } else { fullRestart(); }
+  }, 800);
+}
+
+function exitToMenu(){
+  if(state.animationId){ cancelAnimationFrame(state.animationId); state.animationId = null; }
+  if(state.timerInterval){ clearInterval(state.timerInterval); state.timerInterval = null; }
+  document.getElementById('victoryModal').classList.remove('show');
+  document.getElementById('simulator-page').classList.remove('active');
+  resetToolSelection();
+  setTimeout(() => { document.getElementById('intro-page').classList.remove('hidden'); }, 300);
+  const music = document.getElementById('bg-music');
+  music.pause(); music.currentTime = 0;
+}
+
+function initWorkshop(){
+  console.log('🔧 Инициализация Урока 14: Механик...');
+  if(typeof THREE === 'undefined'){ showNotification("❌ Three.js не загружен", 'hit'); return; }
+  if(!checkWebGL()){ showNotification("❌ WebGL не поддерживается", 'hit'); return; }
+  setupScene();
+  if(!scene || !renderer){ showNotification("❌ Ошибка инициализации 3D", 'hit'); return; }
+  setupLights();
+  setupWorkbench();
+  setupDrone();
+  generateDamages();
+  setupEventListeners();
+  state.simulatorInitialized = true;
+  startMissionTimer();
+  animate(performance.now());
+}
+
+function setupScene(){
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x1a0f05);
+  scene.fog = new THREE.FogExp2(0x1a0f05, 0.02);
+  camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.set(0, 2, CONFIG.DEFAULT_ZOOM);
+  camera.lookAt(0, 0, 0);
+  isLowEnd = (navigator.hardwareConcurrency || 4) < CONFIG.LOW_END_CORES;
+  const pixelRatio = isLowEnd ? 1 : Math.min(window.devicePixelRatio, CONFIG.MAX_PIXEL_RATIO);
+  try{ renderer = new THREE.WebGLRenderer({ antialias: !isLowEnd, alpha: true }); }
+  catch(e){ console.error('Ошибка WebGLRenderer:', e); return; }
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(pixelRatio);
+  renderer.shadowMap.enabled = !isLowEnd;
+  if(!isLowEnd) renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.1;
+  const simPage = document.getElementById('simulator-page');
+  simPage.insertBefore(renderer.domElement, simPage.firstChild);
+  renderer.domElement.style.position = 'fixed';
+  renderer.domElement.style.top = '0';
+  renderer.domElement.style.left = '0';
+  renderer.domElement.style.zIndex = '1';
+}
+
+function setupLights(){
+  scene.add(new THREE.AmbientLight(0x6a4a2a, 0.6));
+  const mainLight = new THREE.DirectionalLight(0xffaa66, 1.0);
+  mainLight.position.set(5, 10, 5);
+  if(!isLowEnd){
+    mainLight.castShadow = true;
+    mainLight.shadow.mapSize.width = 2048;
+    mainLight.shadow.mapSize.height = 2048;
+  }
+  scene.add(mainLight);
+  const warmLight = new THREE.PointLight(0xff8c00, 1.5, 15);
+  warmLight.position.set(-3, 3, 3);
+  scene.add(warmLight);
+  const coolLight = new THREE.PointLight(0x6688ff, 0.8, 15);
+  coolLight.position.set(3, 3, -3);
+  scene.add(coolLight);
+}
+
+function setupWorkbench(){
+  const tableMat = new THREE.MeshStandardMaterial({ color: 0x3a2818, roughness: 0.8, metalness: 0.2 });
+  const table = new THREE.Mesh(new THREE.BoxGeometry(12, 0.3, 12), tableMat);
+  table.position.y = -1.5;
+  table.receiveShadow = true;
+  scene.add(table);
+  const metalMat = new THREE.MeshStandardMaterial({ color: 0x555555, roughness: 0.4, metalness: 0.8 });
+  const plate = new THREE.Mesh(new THREE.BoxGeometry(4, 0.05, 4), metalMat);
+  plate.position.y = -1.32;
+  plate.receiveShadow = true;
+  scene.add(plate);
+  const gridHelper = new THREE.GridHelper(4, 20, 0xff8c00, 0x553300);
+  gridHelper.position.y = -1.29;
+  gridHelper.material.transparent = true;
+  gridHelper.material.opacity = 0.5;
+  scene.add(gridHelper);
+  const wallMat = new THREE.MeshStandardMaterial({ color: 0x2a1a0a, roughness: 0.9, metalness: 0.1 });
+  const wall = new THREE.Mesh(new THREE.BoxGeometry(14, 8, 0.3), wallMat);
+  wall.position.set(0, 2, -6);
+  wall.receiveShadow = true;
+  scene.add(wall);
+  const shelfMat = new THREE.MeshStandardMaterial({ color: 0x4a2a10, roughness: 0.7 });
+  const shelf = new THREE.Mesh(new THREE.BoxGeometry(10, 0.15, 0.6), shelfMat);
+  shelf.position.set(0, 2.5, -5.7);
+  scene.add(shelf);
+}
+
+function setupDrone(){
+  droneGroup = new THREE.Group();
+  scene.add(droneGroup);
+  droneGroup.position.set(0, 0, 0);
+  const s = 2.5;
+  const carbonMat = new THREE.MeshStandardMaterial({ color: 0x151515, roughness: 0.6, metalness: 0.8 });
+  const goldMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, roughness: 0.15, metalness: 0.9 });
+  const titaniumMat = new THREE.MeshStandardMaterial({ color: 0x555555, roughness: 0.3, metalness: 0.7 });
+  const neonPropMat = new THREE.MeshStandardMaterial({ color: 0x00ffcc, roughness: 0.1, metalness: 0.1, transparent: true, opacity: 0.7 });
+  const plasticMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.5, metalness: 0.2 });
+  const lensMat = new THREE.MeshStandardMaterial({ color: 0x050505, roughness: 0.05, metalness: 1.0 });
+  const pcbMat = new THREE.MeshStandardMaterial({ color: 0x0f3d0f, roughness: 0.5, metalness: 0.2 });
+  const strapMat = new THREE.MeshStandardMaterial({ color: 0xddaa00, roughness: 0.9 });
+  
+  const bottomPlate = new THREE.Mesh(new THREE.BoxGeometry(0.3 * s, 0.015 * s, 0.45 * s), carbonMat);
+  bottomPlate.position.y = -0.03 * s;
+  bottomPlate.castShadow = true;
+  bottomPlate.userData.partName = 'arm';
+  droneGroup.add(bottomPlate);
+  
+  const topPlate = new THREE.Mesh(new THREE.BoxGeometry(0.18 * s, 0.015 * s, 0.35 * s), carbonMat);
+  topPlate.position.y = 0.05 * s;
+  topPlate.castShadow = true;
+  droneGroup.add(topPlate);
+  
+  const pcb = new THREE.Mesh(new THREE.BoxGeometry(0.12 * s, 0.01 * s, 0.12 * s), pcbMat);
+  pcb.position.set(0, 0.01 * s, 0);
+  pcb.userData.partName = 'pcb';
+  droneGroup.add(pcb);
+  
+  const heatsink = new THREE.Mesh(new THREE.BoxGeometry(0.1 * s, 0.015 * s, 0.1 * s), titaniumMat);
+  heatsink.position.set(0, 0.02 * s, 0);
+  droneGroup.add(heatsink);
+  
+  const armPositions = [
+    { x: 0.26, z: 0.26, angle: -Math.PI / 4, isFront: true, index: 0 },
+    { x: -0.26, z: 0.26, angle: Math.PI / 4, isFront: true, index: 1 },
+    { x: 0.26, z: -0.26, angle: Math.PI / 4, isFront: false, index: 2 },
+    { x: -0.26, z: -0.26, angle: -Math.PI / 4, isFront: false, index: 3 }
+  ];
+  
+  droneGroup.userData.propellers = [];
+  droneGroup.userData.motors = [];
+  droneGroup.userData.leds = [];
+  armsList = [];
+  
+  armPositions.forEach((pos) => {
+    const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.02 * s, 0.02 * s, 0.36 * s, 8), carbonMat);
+    arm.position.set((pos.x / 2) * s, 0.01 * s, (pos.z / 2) * s);
+    arm.rotation.z = Math.PI / 2;
+    arm.rotation.y = pos.angle;
+    arm.castShadow = true;
+    arm.userData.partName = 'arm';
+    arm.userData.armIndex = pos.index;
+    droneGroup.add(arm);
+    armsList.push(arm);
+    
+    const motorGroup = new THREE.Group();
+    motorGroup.position.set(pos.x * s, 0.03 * s, pos.z * s);
+    motorGroup.userData.partName = 'motor';
+    const motorBase = new THREE.Mesh(new THREE.CylinderGeometry(0.045 * s, 0.045 * s, 0.04 * s, 12), titaniumMat);
+    motorBase.castShadow = true;
+    motorGroup.add(motorBase);
+    const motorBell = new THREE.Mesh(new THREE.CylinderGeometry(0.042 * s, 0.042 * s, 0.03 * s, 12), goldMat);
+    motorBell.position.y = 0.025 * s;
+    motorBell.castShadow = true;
+    motorGroup.add(motorBell);
+    droneGroup.add(motorGroup);
+    droneGroup.userData.motors.push(motorGroup);
+    
+    const guardGeo = new THREE.TorusGeometry(0.15 * s, 0.01 * s, 8, 24);
+    const guard = new THREE.Mesh(guardGeo, plasticMat);
+    guard.rotation.x = Math.PI / 2;
+    guard.position.set(pos.x * s, 0.06 * s, pos.z * s);
+    droneGroup.add(guard);
+    
+    const ledColor = pos.isFront ? 0x00ff00 : 0xff0000;
+    const led = new THREE.Mesh(new THREE.SphereGeometry(0.02 * s, 8, 8), new THREE.MeshBasicMaterial({ color: ledColor }));
+    led.position.set(pos.x * s, -0.02 * s, pos.z * s);
+    led.userData.partName = 'led';
+    led.userData.ledIndex = pos.index;
+    droneGroup.add(led);
+    droneGroup.userData.leds.push(led);
+    
+    const foot = new THREE.Mesh(new THREE.BoxGeometry(0.03 * s, 0.05 * s, 0.03 * s), plasticMat);
+    foot.position.set(pos.x * s, -0.015 * s, pos.z * s);
+    droneGroup.add(foot);
+    
+    const propGroup = new THREE.Group();
+    propGroup.position.set(pos.x * s, 0.075 * s, pos.z * s);
+    propGroup.userData.partName = 'propeller';
+    propGroup.userData.propIndex = pos.index;
+    const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.015 * s, 0.015 * s, 0.02 * s, 8), titaniumMat);
+    propGroup.add(hub);
+    const nut = new THREE.Mesh(new THREE.ConeGeometry(0.01 * s, 0.015 * s, 6), goldMat);
+    nut.position.y = 0.015 * s;
+    propGroup.add(nut);
+    for (let i = 0; i < 3; i++) {
+      const blade = new THREE.Mesh(new THREE.BoxGeometry(0.13 * s, 0.006 * s, 0.022 * s), neonPropMat);
+      blade.position.set(0, 0.005 * s, 0);
+      blade.geometry.translate(0.06 * s, 0, 0);
+      blade.rotation.x = 0.15;
+      blade.rotation.y = (Math.PI * 2 / 3) * i;
+      propGroup.add(blade);
+    }
+    droneGroup.add(propGroup);
+    droneGroup.userData.propellers.push(propGroup);
+  });
+  
+  const cameraGroup = new THREE.Group();
+  cameraGroup.position.set(0, 0.01 * s, 0.22 * s);
+  cameraGroup.userData.partName = 'camera';
+  const mountGeo = new THREE.BoxGeometry(0.01 * s, 0.08 * s, 0.08 * s);
+  const leftMount = new THREE.Mesh(mountGeo, titaniumMat);
+  leftMount.position.x = -0.06 * s;
+  const rightMount = leftMount.clone();
+  rightMount.position.x = 0.06 * s;
+  cameraGroup.add(leftMount, rightMount);
+  const camBodyGroup = new THREE.Group();
+  camBodyGroup.rotation.x = -0.25;
+  const camBody = new THREE.Mesh(new THREE.BoxGeometry(0.1 * s, 0.07 * s, 0.07 * s), plasticMat);
+  camBody.castShadow = true;
+  camBodyGroup.add(camBody);
+  const lensRing = new THREE.Mesh(new THREE.CylinderGeometry(0.035 * s, 0.035 * s, 0.04 * s, 12), titaniumMat);
+  lensRing.rotation.x = Math.PI / 2;
+  lensRing.position.set(0, 0, 0.04 * s);
+  camBodyGroup.add(lensRing);
+  const lensGlass = new THREE.Mesh(new THREE.CylinderGeometry(0.028 * s, 0.028 * s, 0.005 * s, 12), lensMat);
+  lensGlass.rotation.x = Math.PI / 2;
+  lensGlass.position.set(0, 0, 0.061 * s);
+  camBodyGroup.add(lensGlass);
+  cameraGroup.add(camBodyGroup);
+  droneGroup.add(cameraGroup);
+  
+  const battery = new THREE.Mesh(new THREE.BoxGeometry(0.09 * s, 0.06 * s, 0.18 * s), plasticMat);
+  battery.position.set(0, 0.09 * s, -0.05 * s);
+  battery.castShadow = true;
+  droneGroup.add(battery);
+  const strap = new THREE.Mesh(new THREE.BoxGeometry(0.1 * s, 0.062 * s, 0.04 * s), strapMat);
+  strap.position.set(0, 0.09 * s, -0.05 * s);
+  droneGroup.add(strap);
+  
+  const antennaGroup = new THREE.Group();
+  antennaGroup.position.set(0, 0.06 * s, -0.2 * s);
+  antennaGroup.userData.partName = 'antenna';
+  const antennaCable = new THREE.Mesh(new THREE.CylinderGeometry(0.006 * s, 0.006 * s, 0.12 * s, 6), titaniumMat);
+  antennaCable.rotation.x = -Math.PI / 4;
+  antennaCable.position.set(0, 0.04 * s, -0.04 * s);
+  antennaGroup.add(antennaCable);
+  const antennaHead = new THREE.Mesh(new THREE.CylinderGeometry(0.025 * s, 0.025 * s, 0.025 * s, 10), plasticMat);
+  antennaHead.position.set(0, 0.08 * s, -0.08 * s);
+  antennaGroup.add(antennaHead);
+  droneGroup.add(antennaGroup);
+  
+  // Принудительное обновление мировых матриц для корректного getWorldPosition
+  droneGroup.updateMatrixWorld(true);
+}
+
+function generateDamages(){
+  state.damages = [];
+  state.repairedCount = 0;
+  state.totalClicks = 0;
+  state.correctClicks = 0;
+  const config = DIFFICULTY_CONFIG[currentDifficulty];
+  const pool = [...config.damagePool];
+  const selectedDamages = [];
+  const count = Math.min(config.DAMAGE_COUNT, pool.length);
+  for(let i = 0; i < count; i++){
+    if(pool.length === 0) break;
+    const idx = Math.floor(Math.random() * pool.length);
+    selectedDamages.push(pool[idx]);
+    pool.splice(idx, 1);
+  }
+  selectedDamages.forEach((type, idx) => {
+    const damage = { id: idx, type: type, config: DAMAGE_TYPES[type], repaired: false };
+    state.damages.push(damage);
+    createDamageIndicator(damage);
+  });
+  document.getElementById('total-damage').innerText = state.damages.length;
+  document.getElementById('diagnosis-total').innerText = state.damages.length;
+  updateTaskList();
+  updateRepairCounter();
+}
+
+function createDamageIndicator(damage){
+  let position = new THREE.Vector3(0, 0.5, 0);
+  try {
+    switch(damage.type){
+      case 'propeller':
+        const propIndex = Math.floor(Math.random() * 4);
+        if(droneGroup.userData.propellers[propIndex]) {
+          droneGroup.userData.propellers[propIndex].getWorldPosition(position);
+          damage.propIndex = propIndex;
+        }
+        break;
+      case 'motor':
+        const motorIndex = Math.floor(Math.random() * 4);
+        if(droneGroup.userData.motors[motorIndex]) {
+          droneGroup.userData.motors[motorIndex].getWorldPosition(position);
+          damage.motorIndex = motorIndex;
+        }
+        break;
+      case 'led':
+        const ledIndex = Math.floor(Math.random() * 4);
+        if(droneGroup.userData.leds[ledIndex]) {
+          droneGroup.userData.leds[ledIndex].getWorldPosition(position);
+          damage.ledIndex = ledIndex;
+        }
+        break;
+      case 'arm':
+        if(armsList.length > 0){
+          const armIdx = Math.floor(Math.random() * armsList.length);
+          armsList[armIdx].getWorldPosition(position);
+          damage.armIndex = armIdx;
+        }
+        break;
+      case 'camera':
+        const cam = droneGroup.children.find(c => c.userData.partName === 'camera');
+        if(cam) cam.getWorldPosition(position);
+        break;
+      case 'pcb':
+        const pcb = droneGroup.children.find(c => c.userData.partName === 'pcb');
+        if(pcb) pcb.getWorldPosition(position);
+        break;
+      case 'antenna':
+        const ant = droneGroup.children.find(c => c.userData.partName === 'antenna');
+        if(ant) ant.getWorldPosition(position);
+        break;
+    }
+  } catch(e) { console.warn('Error getting position:', e); }
+  
+  const markerGeo = new THREE.SphereGeometry(0.15, 12, 12);
+  const markerMat = new THREE.MeshBasicMaterial({ color: 0xff3300, transparent: true, opacity: 0.8 });
+  const marker = new THREE.Mesh(markerGeo, markerMat);
+  marker.position.copy(droneGroup.worldToLocal(position.clone()));
+  marker.position.y += 0.3;
+  marker.userData.damageId = damage.id;
+  marker.userData.isDamageIndicator = true;
+  droneGroup.add(marker);
+  const glowGeo = new THREE.SphereGeometry(0.25, 12, 12);
+  const glowMat = new THREE.MeshBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0.3 });
+  const glow = new THREE.Mesh(glowGeo, glowMat);
+  marker.add(glow);
+  damageIndicators.push({ marker: marker, glow: glow, damageId: damage.id, phase: Math.random() * Math.PI * 2 });
+}
+
+function updateTaskList(){
+  const list = document.getElementById('task-list');
+  list.innerHTML = '';
+  state.damages.forEach(damage => {
+    const item = document.createElement('div');
+    item.className = 'task-item' + (damage.repaired ? ' done' : '');
+    item.innerHTML = `<span class="dot"></span><span>${damage.config.icon} ${damage.config.description}</span>`;
+    list.appendChild(item);
+  });
+}
+
+function updateRepairCounter(){
+  document.getElementById('repaired-count').innerText = state.repairedCount;
+  document.getElementById('diagnosis-counter').innerText = state.repairedCount;
+  const accuracy = state.totalClicks > 0 ? Math.round((state.correctClicks / state.totalClicks) * 100) : 100;
+  document.getElementById('accuracy').innerText = accuracy;
+}
+
+function startMissionTimer(){
+  if(state.timerInterval) clearInterval(state.timerInterval);
+  state.missionTime = 0;
+  const timerElem = document.getElementById('mission-timer');
+  state.timerInterval = setInterval(() => {
+    if(state.gameCompleted) return;
+    state.missionTime++;
+    if(timerElem) timerElem.innerText = state.missionTime;
+  }, 1000);
+}
+
+// ========== MOUSE ==========
+function handleMouseDown(event){
+  if(event.target.tagName === 'BUTTON' || event.target.closest('button') || event.target.closest('#tool-panel')) return;
+  state.isDragging = true;
+  state.mouseDownX = event.clientX;
+  state.mouseDownY = event.clientY;
+  state.lastMouseX = event.clientX;
+  state.lastMouseY = event.clientY;
+}
+
+function handleMouseMove(event){
+  const cursor = document.getElementById('cursor-tool');
+  if(state.selectedTool && !('ontouchstart' in window)){
+    cursor.style.left = event.clientX + 'px';
+    cursor.style.top = event.clientY + 'px';
+  }
+  if(state.isDragging){
+    const deltaX = event.clientX - state.lastMouseX;
+    const deltaY = event.clientY - state.lastMouseY;
+    state.droneRotationY += deltaX * CONFIG.ROTATE_SPEED;
+    state.droneRotationX += deltaY * CONFIG.ROTATE_SPEED;
+    state.droneRotationX = Math.max(-Math.PI / 3, Math.min(Math.PI / 3, state.droneRotationX));
+    state.lastMouseX = event.clientX;
+    state.lastMouseY = event.clientY;
+  }
+}
+
+function handleMouseUp(event){
+  if(!state.isDragging) return;
+  const moved = Math.abs(event.clientX - state.mouseDownX) + Math.abs(event.clientY - state.mouseDownY);
+  state.isDragging = false;
+  if(moved < 10 && state.selectedTool){ handleDroneClick(event.clientX, event.clientY); }
+}
+
+function handleWheel(event){
+  event.preventDefault();
+  state.cameraDistance += event.deltaY > 0 ? CONFIG.ZOOM_SPEED : -CONFIG.ZOOM_SPEED;
+  state.cameraDistance = Math.max(CONFIG.MIN_ZOOM, Math.min(CONFIG.MAX_ZOOM, state.cameraDistance));
+}
+
+// ========== TOUCH ==========
+function getTouchDistance(t1, t2){
+  const dx = t1.clientX - t2.clientX;
+  const dy = t1.clientY - t2.clientY;
+  return Math.sqrt(dx*dx + dy*dy);
+}
+
+function handleTouchStart(event){
+  if(event.target.tagName === 'BUTTON' || event.target.closest('button') || event.target.closest('#tool-panel')) return;
+  if(event.touches.length === 1){
+    state.isTouchDragging = true;
+    state.touchMoved = false;
+    state.touchStartX = event.touches[0].clientX;
+    state.touchStartY = event.touches[0].clientY;
+    state.touchLastX = event.touches[0].clientX;
+    state.touchLastY = event.touches[0].clientY;
+  } else if(event.touches.length === 2){
+    state.isPinching = true;
+    state.isTouchDragging = false;
+    state.pinchStartDistance = getTouchDistance(event.touches[0], event.touches[1]);
+  }
+}
+
+function handleTouchMove(event){
+  event.preventDefault();
+  if(event.touches.length === 1 && state.isTouchDragging){
+    const dx = event.touches[0].clientX - state.touchLastX;
+    const dy = event.touches[0].clientY - state.touchLastY;
+    const totalMoved = Math.abs(event.touches[0].clientX - state.touchStartX) + Math.abs(event.touches[0].clientY - state.touchStartY);
+    if(totalMoved > 8) state.touchMoved = true;
+    state.droneRotationY += dx * CONFIG.ROTATE_SPEED;
+    state.droneRotationX += dy * CONFIG.ROTATE_SPEED;
+    state.droneRotationX = Math.max(-Math.PI / 3, Math.min(Math.PI / 3, state.droneRotationX));
+    state.touchLastX = event.touches[0].clientX;
+    state.touchLastY = event.touches[0].clientY;
+  } else if(event.touches.length === 2 && state.isPinching){
+    const dist = getTouchDistance(event.touches[0], event.touches[1]);
+    const delta = state.pinchStartDistance - dist;
+    state.cameraDistance += delta * 0.02;
+    state.cameraDistance = Math.max(CONFIG.MIN_ZOOM, Math.min(CONFIG.MAX_ZOOM, state.cameraDistance));
+    state.pinchStartDistance = dist;
+    state.touchMoved = true;
+  }
+}
+
+function handleTouchEnd(event){
+  if(state.isTouchDragging && !state.touchMoved && state.selectedTool){
+    handleDroneClick(state.touchStartX, state.touchStartY);
+  }
+  state.isTouchDragging = false;
+  state.isPinching = false;
+}
+
+function handleDroneClick(clientX, clientY){
+  if(!state.selectedTool){ showNotification("⚠️ Сначала выберите инструмент!", 'info'); return; }
+  state.totalClicks++;
+  state.mousePos.x = (clientX / window.innerWidth) * 2 - 1;
+  state.mousePos.y = -(clientY / window.innerHeight) * 2 + 1;
+  state.raycaster.setFromCamera(state.mousePos, camera);
+  const markers = damageIndicators.map(d => d.marker);
+  const intersects = state.raycaster.intersectObjects(markers, true);
+  if(intersects.length > 0){
+    let hitMarker = intersects[0].object;
+    while(hitMarker && !hitMarker.userData.isDamageIndicator){ hitMarker = hitMarker.parent; }
+    if(hitMarker && hitMarker.userData.isDamageIndicator){
+      const damageId = hitMarker.userData.damageId;
+      const damage = state.damages.find(d => d.id === damageId);
+      if(damage && !damage.repaired){
+        if(damage.config.tool === state.selectedTool){
+          repairDamage(damage);
+          state.correctClicks++;
+        } else {
+          SFX.wrong();
+          showNotification(`❌ Неверный инструмент! Для "${damage.config.name}" нужен: ${getToolName(damage.config.tool)}`, 'hit');
+        }
+      }
+    }
+  } else {
+    SFX.wrong();
+    showNotification("⚠️ Пропмах! Цельтесь в мигающие маркеры", 'info');
+  }
+  updateRepairCounter();
+}
+
+function getToolName(tool){
+  const names = { screwdriver: '🔧 отвёртка', soldering: '🔥 паяльник', wrench: '🔑 ключ', multimeter: '📏 мультиметр', pliers: '🛠️ плоскогубцы' };
+  return names[tool] || tool;
+}
+
+function repairDamage(damage){
+  damage.repaired = true;
+  state.repairedCount++;
+  const indicator = damageIndicators.find(d => d.damageId === damage.id);
+  if(indicator){ 
+    droneGroup.remove(indicator.marker); 
+    if(indicator.marker.geometry) indicator.marker.geometry.dispose();
+    if(indicator.marker.material) indicator.marker.material.dispose();
+    if(indicator.glow){
+      if(indicator.glow.geometry) indicator.glow.geometry.dispose();
+      if(indicator.glow.material) indicator.glow.material.dispose();
+    }
+    damageIndicators.splice(damageIndicators.indexOf(indicator), 1); 
+  }
+  createRepairEffect(damage);
+  SFX.repair();
+  showNotification(`✅ Починено: ${damage.config.name}!`, 'success');
+  updateTaskList();
+  updateRepairCounter();
+  if(state.repairedCount === state.damages.length){ setTimeout(() => { showVictoryModal(); }, 1000); }
+}
+
+function createRepairEffect(damage){
+  let position = new THREE.Vector3(0, 0.5, 0);
+  try {
+    switch(damage.type){
+      case 'propeller':
+        if(damage.propIndex !== undefined && droneGroup.userData.propellers[damage.propIndex]) {
+          droneGroup.userData.propellers[damage.propIndex].getWorldPosition(position);
+        }
+        break;
+      case 'motor':
+        if(damage.motorIndex !== undefined && droneGroup.userData.motors[damage.motorIndex]) {
+          droneGroup.userData.motors[damage.motorIndex].getWorldPosition(position);
+        }
+        break;
+      case 'led':
+        if(damage.ledIndex !== undefined && droneGroup.userData.leds[damage.ledIndex]) {
+          droneGroup.userData.leds[damage.ledIndex].getWorldPosition(position);
+        }
+        break;
+      case 'arm':
+        if(damage.armIndex !== undefined && armsList[damage.armIndex]) {
+          armsList[damage.armIndex].getWorldPosition(position);
+        }
+        break;
+      case 'camera':
+        const cam = droneGroup.children.find(c => c.userData.partName === 'camera');
+        if(cam) cam.getWorldPosition(position);
+        break;
+      case 'pcb':
+        const pcb = droneGroup.children.find(c => c.userData.partName === 'pcb');
+        if(pcb) pcb.getWorldPosition(position);
+        break;
+      case 'antenna':
+        const ant = droneGroup.children.find(c => c.userData.partName === 'antenna');
+        if(ant) ant.getWorldPosition(position);
+        break;
+    }
+  } catch(e) { console.warn('Error getting repair position:', e); }
+  const particleCount = 20;
+  const particles = [];
+  for(let i = 0; i < particleCount; i++){
+    const particle = new THREE.Mesh(new THREE.SphereGeometry(0.05, 6, 6), new THREE.MeshBasicMaterial({ color: 0x55ff55, transparent: true, opacity: 1 }));
+    particle.position.copy(position);
+    particle.userData.velocity = new THREE.Vector3((Math.random() - 0.5) * 0.2, Math.random() * 0.2, (Math.random() - 0.5) * 0.2);
+    particle.userData.life = 30;
+    scene.add(particle);
+    particles.push(particle);
+  }
+  let frame = 0;
+  const animateParticles = () => {
+    frame++;
+    particles.forEach(p => {
+      p.position.add(p.userData.velocity);
+      p.userData.velocity.y -= 0.01;
+      p.userData.life--;
+      p.material.opacity = p.userData.life / 30;
+    });
+    if(frame < 30){ requestAnimationFrame(animateParticles); } 
+    else { particles.forEach(p => { scene.remove(p); if(p.geometry) p.geometry.dispose(); if(p.material) p.material.dispose(); }); }
+  };
+  animateParticles();
+}
+
+function showVictoryModal(){
+  if(state.gameCompleted) return;
+  state.gameCompleted = true;
+  if(state.timerInterval){ clearInterval(state.timerInterval); state.timerInterval = null; }
+  const accuracy = state.totalClicks > 0 ? Math.round((state.correctClicks / state.totalClicks) * 100) : 100;
+  document.getElementById('victoryRepaired').innerText = state.repairedCount;
+  document.getElementById('victoryTime').innerText = state.missionTime;
+  document.getElementById('victoryAccuracy').innerText = accuracy;
+  document.getElementById('victoryDifficulty').innerText = DIFFICULTY_CONFIG[currentDifficulty].name;
+  document.getElementById('victoryModal').classList.add('show');
+  SFX.victory();
+  showNotification(`🏆 УРОК 14 ПРОЙДЕН! Уровень: ${DIFFICULTY_CONFIG[currentDifficulty].name}!`, 'success');
+}
+
+function fullRestart(){
+  document.getElementById('victoryModal').classList.remove('show');
+  state.gameCompleted = false;
+  state.missionTime = 0;
+  state.droneRotationY = 0;
+  state.droneRotationX = 0;
+  state.cameraDistance = CONFIG.DEFAULT_ZOOM;
+  resetToolSelection();
+  damageIndicators.forEach(ind => {
+    droneGroup.remove(ind.marker);
+    if(ind.marker.geometry) ind.marker.geometry.dispose();
+    if(ind.marker.material) ind.marker.material.dispose();
+    if(ind.glow){
+      if(ind.glow.geometry) ind.glow.geometry.dispose();
+      if(ind.glow.material) ind.glow.material.dispose();
+    }
+  });
+  damageIndicators = [];
+  generateDamages();
+  if(state.timerInterval) clearInterval(state.timerInterval);
+  startMissionTimer();
+  if(!state.animationId) { animate(performance.now()); }
+  showNotification("🔄 Новый дрон поступил в ремонт!", 'success');
+}
+
+function updateCamera(){
+  const x = Math.sin(state.droneRotationY) * Math.cos(state.droneRotationX) * state.cameraDistance;
+  const y = Math.sin(state.droneRotationX) * state.cameraDistance + 1;
+  const z = Math.cos(state.droneRotationY) * Math.cos(state.droneRotationX) * state.cameraDistance;
+  camera.position.lerp(new THREE.Vector3(x, y, z), CONFIG.CAMERA_LERP);
+  camera.lookAt(0, 0, 0);
+}
+
+function updateDamageIndicators(time){
+  damageIndicators.forEach(ind => {
+    const blink = 0.5 + Math.sin(time * CONFIG.DAMAGE_BLINK_SPEED + ind.phase) * 0.5;
+    ind.marker.material.opacity = blink;
+    ind.glow.material.opacity = blink * 0.4;
+    ind.marker.scale.setScalar(0.8 + blink * 0.3);
+  });
+}
+
+function animate(time){
+  state.animationId = requestAnimationFrame(animate);
+  updateCamera();
+  updateDamageIndicators(time || 0);
+  renderer.render(scene, camera);
+}
+
+function handleResize(){
+  if(!camera || !renderer) return;
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function setupEventListeners(){
+  window.addEventListener('resize', handleResize);
+  window.addEventListener('mousedown', handleMouseDown);
+  window.addEventListener('mousemove', handleMouseMove);
+  window.addEventListener('mouseup', handleMouseUp);
+  window.addEventListener('wheel', handleWheel, { passive: false });
+  window.addEventListener('touchstart', handleTouchStart, { passive: false });
+  window.addEventListener('touchmove', handleTouchMove, { passive: false });
+  window.addEventListener('touchend', handleTouchEnd);
+  window.addEventListener('contextmenu', (e) => { e.preventDefault(); return false; });
+  document.getElementById('resetBtn').addEventListener('click', fullRestart);
+  document.getElementById('exitMenuBtn').addEventListener('click', exitToMenu);
+}
+
+window.addEventListener('beforeunload', () => {
+  if(state.animationId) cancelAnimationFrame(state.animationId);
+  if(state.timerInterval) clearInterval(state.timerInterval);
+  window.removeEventListener('resize', handleResize);
+  window.removeEventListener('mousedown', handleMouseDown);
+  window.removeEventListener('mousemove', handleMouseMove);
+  window.removeEventListener('mouseup', handleMouseUp);
+  window.removeEventListener('wheel', handleWheel);
+  window.removeEventListener('touchstart', handleTouchStart);
+  window.removeEventListener('touchmove', handleTouchMove);
+  window.removeEventListener('touchend', handleTouchEnd);
+  if(audioCtx && audioCtx.state !== 'closed'){ try{ audioCtx.close(); } catch(e){} }
+  if(scene){
+    scene.traverse(obj => {
+      if(obj.geometry) obj.geometry.dispose();
+      if(obj.material){
+        if(Array.isArray(obj.material)) obj.material.forEach(m => m.dispose());
+        else obj.material.dispose();
+      }
+    });
+  }
+  if(renderer) renderer.dispose();
+});
+</script>
+</body>
+</html>
