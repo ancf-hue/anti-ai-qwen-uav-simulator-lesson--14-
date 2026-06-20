@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -35,7 +36,7 @@ body::before{
 }
 
 /* ============ ЛОГОТИП ============ */
-.logo-header{ position: fixed; top: 20px; left: 20px; z-index: 1000; display: flex; align-items: center; gap: 10px; padding: 10px 16px; background: rgba(20, 10, 0, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 50px; border: 1px solid rgba(255, 200, 100, 0.3); box-shadow: 0 8px 32px rgba(255, 140, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);}
+.logo-header{ position: fixed; top: 20px; left: 20px; z-index: 1000; display: flex; align-items: center; gap: 10px; padding: 10px 16px; background: rgba(20, 10, 0, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 50px; border: 1px solid rgba(255, 200, 100, 0.3); box-shadow: 0 8px 32px rgba(255, 140, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2); touch-action: manipulation;}
 .logo-header::before{ content:''; position: absolute; inset:-2px; background: linear-gradient(135deg,#ff8c00,#ffcc00,#ff6600,#ffaa00, #ff8c00); border-radius: 50px; z-index:-1; animation: gradientShift 5s ease infinite; background-size: 300% 300%; opacity: 0.8;}
 @keyframes gradientShift{ 0%, 100%{ background-position: 0% 50%;} 50%{ background-position: 100% 50%;}}
 .logo-header img{ width: 40px; height: 40px; border-radius: 10px; box-shadow: 0 0 15px rgba(255, 140, 0, 0.6);}
@@ -44,7 +45,7 @@ body::before{
 .logo-sub{ font-size: 11px; color:#ffcc00; font-weight: bold; letter-spacing: 2px; text-shadow: 0 0 10px rgba(255, 200, 0, 0.6);}
 
 /* ============ ПРИВЕТСТВИЕ ============ */
-#intro-page{ position: fixed; inset: 0; background: radial-gradient(ellipse at center,#2a1a0a 0%,#1a0f05 50%,#0a0500 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 500; transition: opacity 0.8s ease; overflow-y: auto; padding: 80px 20px 20px;}
+#intro-page{ position: fixed; inset: 0; background: radial-gradient(ellipse at center,#2a1a0a 0%,#1a0f05 50%,#0a0500 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 500; transition: opacity 0.8s ease; overflow-y: auto; padding: 80px 20px 20px; touch-action: manipulation;}
 #intro-page.hidden{ opacity: 0; pointer-events: none;}
 .intro-image{ width: 90%; max-width: 900px; border-radius: 20px; box-shadow: 0 0 60px rgba(255, 140, 0, 0.5), 0 0 100px rgba(255, 200, 50, 0.3); border: 3px solid rgba(255, 180, 50, 0.6); animation: imageGlow 4s ease-in-out infinite;}
 @keyframes imageGlow{
@@ -67,6 +68,7 @@ body::before{
   flex-wrap: wrap; 
   justify-content: center;
   perspective: 1000px;
+  touch-action: manipulation;
 }
 
 .difficulty-btn{ 
@@ -101,6 +103,7 @@ body::before{
   transform-style: preserve-3d;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
   overflow: hidden;
+  touch-action: manipulation;
   -webkit-user-select: none;
   user-select: none;
 }
@@ -187,7 +190,6 @@ body::before{
     0 0 50px var(--glow-color),
     inset 0 1px 0 rgba(255, 255, 255, 0.5),
     inset 0 -2px 10px rgba(0, 0, 0, 0.3);
-  animation: none;
 }
 .difficulty-btn:hover::after{ left: 100%;}
 
@@ -239,6 +241,7 @@ body::before{
     inset 0 -2px 10px rgba(0, 0, 0, 0.2);
   position: relative;
   overflow: hidden;
+  touch-action: manipulation;
 }
 .difficulty-info::before{
   content:'';
@@ -261,14 +264,14 @@ body::before{
 .difficulty-info p{ color: #d4b896; margin: 8px 0; font-size: 13px; line-height: 1.6; position: relative; z-index: 1; -webkit-user-select: text; user-select: text;}
 
 /* ============ СТРАНИЦА СИМУЛЯТОРА ============ */
-#simulator-page{ position: fixed; inset: 0; opacity: 0; pointer-events: none; transition: opacity 1s ease; background: #1a0f05;}
+#simulator-page{ position: fixed; inset: 0; opacity: 0; pointer-events: none; transition: opacity 1s ease; background: #1a0f05; touch-action: manipulation;}
 #simulator-page.active{ opacity: 1; pointer-events: all;}
 
-#stats-panel{ position: fixed; top: 90px; left: 20px; z-index: 100; background: rgba(20, 10, 0, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 20px; padding: 8px 15px; border: 1px solid rgba(255, 140, 0, 0.3); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15); pointer-events: none; font-family: monospace;}
+#stats-panel{ position: fixed; top: 90px; left: 20px; z-index: 100; background: rgba(20, 10, 0, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 20px; padding: 8px 15px; border: 1px solid rgba(255, 140, 0, 0.3); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15); pointer-events: none; font-family: monospace; touch-action: manipulation;}
 .stats{ font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap;}
 .stat{ background: rgba(40, 20, 5, 0.6); padding: 3px 10px; border-radius: 20px; border: 1px solid rgba(255, 140, 0, 0.4); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);}
 
-#task-panel{ position: fixed; top: 140px; left: 20px; z-index: 100; background: rgba(20, 10, 0, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 20px; padding: 10px 15px; border: 1px solid rgba(255, 140, 0, 0.3); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15); pointer-events: none; font-family: monospace; font-size: 12px; color:#d4b896; max-width: 260px;}
+#task-panel{ position: fixed; top: 140px; left: 20px; z-index: 100; background: rgba(20, 10, 0, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 20px; padding: 10px 15px; border: 1px solid rgba(255, 140, 0, 0.3); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15); pointer-events: none; font-family: monospace; font-size: 12px; color:#d4b896; max-width: 260px; touch-action: manipulation;}
 #task-panel .task-title{ color: #ffcc00; font-weight: bold; font-size: 14px; margin-bottom: 8px; text-shadow: 0 0 10px rgba(255, 200, 0, 0.5);}
 .task-item{ padding: 4px 0; display: flex; align-items: center; gap: 6px; font-size: 11px;}
 .task-item.done{ color: #55ff55; text-decoration: line-through; opacity: 0.6;}
@@ -299,6 +302,7 @@ body::before{
     0 0 30px rgba(255, 140, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
     inset 0 -2px 10px rgba(0, 0, 0, 0.3);
+  touch-action: manipulation;
 }
 
 .tool-btn{ 
@@ -327,6 +331,7 @@ body::before{
     0 4px 15px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.15),
     inset 0 -2px 5px rgba(0, 0, 0, 0.3);
+  touch-action: manipulation;
   -webkit-user-select: none;
   user-select: none;
 }
@@ -371,12 +376,12 @@ body::before{
 }
 .tool-btn:hover::before{ left: 100%;}
 
-#controls-hint{ position: fixed; bottom: 20px; left: 20px; background: rgba(20, 10, 0, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); padding: 8px 14px; border-radius: 15px; font-size: 11px; pointer-events: none; font-family: monospace; color:#d4b896; z-index: 100; border: 1px solid rgba(255, 140, 0, 0.3); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15); line-height: 1.6;}
+#controls-hint{ position: fixed; bottom: 20px; left: 20px; background: rgba(20, 10, 0, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); padding: 8px 14px; border-radius: 15px; font-size: 11px; pointer-events: none; font-family: monospace; color:#d4b896; z-index: 100; border: 1px solid rgba(255, 140, 0, 0.3); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15); line-height: 1.6; touch-action: manipulation;}
 
-#diagnosis-panel{ position: fixed; top: 20px; right: 20px; background: rgba(20, 10, 0, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); padding: 12px 20px; border-radius: 20px; text-align: center; border: 1px solid rgba(255, 140, 0, 0.4); pointer-events: none; font-family: monospace; min-width: 170px; z-index: 100; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 140, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);}
+#diagnosis-panel{ position: fixed; top: 20px; right: 20px; background: rgba(20, 10, 0, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); padding: 12px 20px; border-radius: 20px; text-align: center; border: 1px solid rgba(255, 140, 0, 0.4); pointer-events: none; font-family: monospace; min-width: 170px; z-index: 100; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 140, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2); touch-action: manipulation;}
 #diagnosis-counter{ font-size: 36px; font-weight: bold; color:#ffcc00; text-shadow: 0 0 15px rgba(255, 200, 0, 0.8);}
 
-.lesson-badge{ position: fixed; bottom: 20px; right: 20px; background: rgba(20, 10, 0, 0.8); backdrop-filter: blur(16px); padding: 5px 12px; border-radius: 20px; font-size: 11px; color:#ffcc00; pointer-events: none; font-family: monospace; z-index: 100; border: 1px solid rgba(255, 140, 0, 0.3); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);}
+.lesson-badge{ position: fixed; bottom: 20px; right: 20px; background: rgba(20, 10, 0, 0.8); backdrop-filter: blur(16px); padding: 5px 12px; border-radius: 20px; font-size: 11px; color:#ffcc00; pointer-events: none; font-family: monospace; z-index: 100; border: 1px solid rgba(255, 140, 0, 0.3); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); touch-action: manipulation;}
 
 /* ============ СТЕКЛЯННЫЕ КНОПКИ УПРАВЛЕНИЯ ============ */
 #resetBtn, #exitMenuBtn{ 
@@ -397,6 +402,7 @@ body::before{
   border: 1px solid rgba(255, 255, 255, 0.3);
   overflow: hidden;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  touch-action: manipulation;
   -webkit-user-select: none;
   user-select: none;
 }
@@ -443,14 +449,14 @@ body::before{
 #resetBtn:hover::before, #exitMenuBtn:hover::before{ left: 100%;}
 
 /* ============ УВЕДОМЛЕНИЯ ============ */
-#notification{ position: fixed; top: 200px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg,#ff8c00,#cc6600); color: white; padding: 12px 28px; border-radius: 30px; font-weight: bold; font-family: monospace; z-index: 9999; opacity: 0; transition: opacity 0.3s, top 0.3s; white-space: nowrap; font-size: 14px; pointer-events: none; backdrop-filter: blur(10px); box-shadow: 0 8px 32px rgba(255, 140, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); max-width: 90%; text-align: center;}
+#notification{ position: fixed; top: 200px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg,#ff8c00,#cc6600); color: white; padding: 12px 28px; border-radius: 30px; font-weight: bold; font-family: monospace; z-index: 9999; opacity: 0; transition: opacity 0.3s, top 0.3s; white-space: nowrap; font-size: 14px; pointer-events: none; backdrop-filter: blur(10px); box-shadow: 0 8px 32px rgba(255, 140, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); touch-action: manipulation;}
 #notification.show{ opacity: 1; top: 220px;}
 #notification.success{ background: linear-gradient(135deg,#55ff55,#22aa22); box-shadow: 0 8px 32px rgba(85, 255, 85, 0.5);}
 #notification.hit{ background: linear-gradient(135deg,#ff3300,#cc2200); box-shadow: 0 8px 32px rgba(255, 51, 0, 0.5);}
 #notification.info{ background: linear-gradient(135deg,#4a8fff,#2266cc); box-shadow: 0 8px 32px rgba(74, 143, 255, 0.5);}
 
 /* ============ МОДАЛЬНОЕ ОКНО ПОБЕДЫ ============ */
-.victory-modal{ position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(15px); z-index: 10000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.5s ease;}
+.victory-modal{ position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(15px); z-index: 10000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.5s ease; touch-action: manipulation;}
 .victory-modal.show{ opacity: 1; visibility: visible;}
 .victory-content{ 
   background: 
@@ -471,6 +477,7 @@ body::before{
     inset 0 -2px 15px rgba(0, 0, 0, 0.3);
   position: relative;
   overflow: hidden;
+  touch-action: manipulation;
 }
 .victory-content::before{
   content:'';
@@ -497,6 +504,7 @@ body::before{
   border: 1px solid rgba(255, 140, 0, 0.3);
   position: relative;
   z-index: 1;
+  touch-action: manipulation;
 }
 .victory-stats span{ color:#ffcc00; font-size: 32px; font-weight: bold; text-shadow: 0 0 15px rgba(255, 200, 0, 0.6);}
 .restart-game-btn, .exit-game-btn{ 
@@ -516,6 +524,7 @@ body::before{
   box-shadow: 
     0 8px 25px rgba(0, 0, 0, 0.5),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  touch-action: manipulation;
   -webkit-user-select: none;
   user-select: none;
 }
@@ -536,7 +545,7 @@ body::before{
 }
 
 /* ============ ПОДДЕРЖКА ============ */
-.support-container{ position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); z-index: 50; max-width: 600px; width: 90%; pointer-events: auto;}
+.support-container{ position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); z-index: 50; max-width: 600px; width: 90%; pointer-events: auto; touch-action: manipulation;}
 .support-block{ 
   background: 
     linear-gradient(135deg, 
@@ -553,6 +562,7 @@ body::before{
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  touch-action: manipulation;
 }
 .support-block strong{ color:#ffdd99;}
 .support-block a{ color:#ffaa33; text-decoration: none; font-weight: bold;}
@@ -570,6 +580,7 @@ body::before{
   cursor: pointer;
   transition: all 0.3s;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  touch-action: manipulation;
   -webkit-user-select: none;
   user-select: none;
 }
@@ -579,8 +590,21 @@ body::before{
 }
 .copy-btn.copied{ background: linear-gradient(135deg,#55ff55,#22aa22)!important;}
 
-#cursor-tool{ position: fixed; pointer-events: none; z-index: 9998; font-size: 32px; opacity: 0; transition: opacity 0.2s; transform: translate(-50%, -50%); filter: drop-shadow(0 0 10px rgba(255, 140, 0, 0.8));}
+#cursor-tool{ position: fixed; pointer-events: none; z-index: 9998; font-size: 32px; opacity: 0; transition: opacity 0.2s; transform: translate(-50%, -50%); filter: drop-shadow(0 0 10px rgba(255, 140, 0, 0.8)); touch-action: manipulation;}
 #cursor-tool.active{ opacity: 1;}
+
+/* ============ 🆕 РАЗРЕШЕНИЕ ЗУМА ПОВСЮДУ ============ */
+#intro-page, #simulator-page, 
+.victory-modal, .victory-content,
+.difficulty-btn, .tool-btn,
+#resetBtn, #exitMenuBtn,
+.restart-game-btn, .exit-game-btn,
+.support-block, .copy-btn,
+#stats-panel, #task-panel, #tool-panel,
+#diagnosis-panel, #controls-hint, .lesson-badge,
+.difficulty-info {
+  touch-action: manipulation;
+}
 
 @media(max-width: 700px){
  .logo-header{ padding: 8px 12px; gap: 8px;}
@@ -598,7 +622,6 @@ body::before{
  #tool-panel{ right: 10px; padding: 10px;}
  .tool-btn{ width: 60px; height: 60px;}
  .tool-btn .icon{ font-size: 24px;}
- #controls-hint{ display: none;}
 }
 </style>
 </head>
@@ -684,7 +707,6 @@ body::before{
   <div id="controls-hint">
     🖱️ ЛКМ + движение — вращать дрон<br>
     🖱️ Колесо — приближение/отдаление<br>
-    📱 1 палец — вращение, 2 пальца — зум<br>
     🔧 Выберите инструмент справа<br>
     🎯 Кликните по повреждённой детали
   </div>
@@ -712,8 +734,6 @@ body::before{
 </div>
 
 <div id="cursor-tool"></div>
-
-<div id="notification"></div>
 
 <div id="victoryModal" class="victory-modal">
   <div class="victory-content">
@@ -767,11 +787,7 @@ const state = {
   timerInterval: null, damages: [], repairedCount: 0, totalClicks: 0, correctClicks: 0,
   selectedTool: null, isDragging: false, mouseDownX: 0, mouseDownY: 0, lastMouseX: 0, lastMouseY: 0,
   droneRotationY: 0, droneRotationX: 0, cameraDistance: 6,
-  mousePos: new THREE.Vector2(), raycaster: new THREE.Raycaster(),
-  // Touch
-  touchStartX: 0, touchStartY: 0, touchLastX: 0, touchLastY: 0,
-  isTouchDragging: false, touchMoved: false,
-  pinchStartDistance: 0, isPinching: false
+  mousePos: new THREE.Vector2(), raycaster: new THREE.Raycaster()
 };
 
 let scene, camera, renderer, droneGroup;
@@ -779,7 +795,6 @@ let isLowEnd = false;
 let audioCtx = null;
 let notifTimeout = null;
 let damageIndicators = [];
-let armsList = [];
 
 function checkWebGL(){
   try{
@@ -858,14 +873,6 @@ function showNotification(text, type = ''){
   notifTimeout = setTimeout(() => { n.className = ''; }, 2500);
 }
 
-function resetToolSelection(){
-  state.selectedTool = null;
-  document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
-  const cursor = document.getElementById('cursor-tool');
-  cursor.classList.remove('active');
-  cursor.innerText = '';
-}
-
 function selectTool(toolName){
   state.selectedTool = toolName;
   document.querySelectorAll('.tool-btn').forEach(btn => {
@@ -894,7 +901,6 @@ function exitToMenu(){
   if(state.timerInterval){ clearInterval(state.timerInterval); state.timerInterval = null; }
   document.getElementById('victoryModal').classList.remove('show');
   document.getElementById('simulator-page').classList.remove('active');
-  resetToolSelection();
   setTimeout(() => { document.getElementById('intro-page').classList.remove('hidden'); }, 300);
   const music = document.getElementById('bg-music');
   music.pause(); music.currentTime = 0;
@@ -1030,7 +1036,6 @@ function setupDrone(){
   droneGroup.userData.propellers = [];
   droneGroup.userData.motors = [];
   droneGroup.userData.leds = [];
-  armsList = [];
   
   armPositions.forEach((pos) => {
     const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.02 * s, 0.02 * s, 0.36 * s, 8), carbonMat);
@@ -1038,10 +1043,7 @@ function setupDrone(){
     arm.rotation.z = Math.PI / 2;
     arm.rotation.y = pos.angle;
     arm.castShadow = true;
-    arm.userData.partName = 'arm';
-    arm.userData.armIndex = pos.index;
     droneGroup.add(arm);
-    armsList.push(arm);
     
     const motorGroup = new THREE.Group();
     motorGroup.position.set(pos.x * s, 0.03 * s, pos.z * s);
@@ -1139,9 +1141,6 @@ function setupDrone(){
   antennaHead.position.set(0, 0.08 * s, -0.08 * s);
   antennaGroup.add(antennaHead);
   droneGroup.add(antennaGroup);
-  
-  // Принудительное обновление мировых матриц для корректного getWorldPosition
-  droneGroup.updateMatrixWorld(true);
 }
 
 function generateDamages(){
@@ -1195,13 +1194,7 @@ function createDamageIndicator(damage){
           damage.ledIndex = ledIndex;
         }
         break;
-      case 'arm':
-        if(armsList.length > 0){
-          const armIdx = Math.floor(Math.random() * armsList.length);
-          armsList[armIdx].getWorldPosition(position);
-          damage.armIndex = armIdx;
-        }
-        break;
+      case 'arm': droneGroup.children[0].getWorldPosition(position); break;
       case 'camera':
         const cam = droneGroup.children.find(c => c.userData.partName === 'camera');
         if(cam) cam.getWorldPosition(position);
@@ -1220,7 +1213,7 @@ function createDamageIndicator(damage){
   const markerGeo = new THREE.SphereGeometry(0.15, 12, 12);
   const markerMat = new THREE.MeshBasicMaterial({ color: 0xff3300, transparent: true, opacity: 0.8 });
   const marker = new THREE.Mesh(markerGeo, markerMat);
-  marker.position.copy(droneGroup.worldToLocal(position.clone()));
+  marker.position.copy(position);
   marker.position.y += 0.3;
   marker.userData.damageId = damage.id;
   marker.userData.isDamageIndicator = true;
@@ -1261,7 +1254,6 @@ function startMissionTimer(){
   }, 1000);
 }
 
-// ========== MOUSE ==========
 function handleMouseDown(event){
   if(event.target.tagName === 'BUTTON' || event.target.closest('button') || event.target.closest('#tool-panel')) return;
   state.isDragging = true;
@@ -1273,7 +1265,7 @@ function handleMouseDown(event){
 
 function handleMouseMove(event){
   const cursor = document.getElementById('cursor-tool');
-  if(state.selectedTool && !('ontouchstart' in window)){
+  if(state.selectedTool){
     cursor.style.left = event.clientX + 'px';
     cursor.style.top = event.clientY + 'px';
   }
@@ -1292,7 +1284,7 @@ function handleMouseUp(event){
   if(!state.isDragging) return;
   const moved = Math.abs(event.clientX - state.mouseDownX) + Math.abs(event.clientY - state.mouseDownY);
   state.isDragging = false;
-  if(moved < 10 && state.selectedTool){ handleDroneClick(event.clientX, event.clientY); }
+  if(moved < 10 && state.selectedTool){ handleDroneClick(event); }
 }
 
 function handleWheel(event){
@@ -1301,64 +1293,11 @@ function handleWheel(event){
   state.cameraDistance = Math.max(CONFIG.MIN_ZOOM, Math.min(CONFIG.MAX_ZOOM, state.cameraDistance));
 }
 
-// ========== TOUCH ==========
-function getTouchDistance(t1, t2){
-  const dx = t1.clientX - t2.clientX;
-  const dy = t1.clientY - t2.clientY;
-  return Math.sqrt(dx*dx + dy*dy);
-}
-
-function handleTouchStart(event){
-  if(event.target.tagName === 'BUTTON' || event.target.closest('button') || event.target.closest('#tool-panel')) return;
-  if(event.touches.length === 1){
-    state.isTouchDragging = true;
-    state.touchMoved = false;
-    state.touchStartX = event.touches[0].clientX;
-    state.touchStartY = event.touches[0].clientY;
-    state.touchLastX = event.touches[0].clientX;
-    state.touchLastY = event.touches[0].clientY;
-  } else if(event.touches.length === 2){
-    state.isPinching = true;
-    state.isTouchDragging = false;
-    state.pinchStartDistance = getTouchDistance(event.touches[0], event.touches[1]);
-  }
-}
-
-function handleTouchMove(event){
-  event.preventDefault();
-  if(event.touches.length === 1 && state.isTouchDragging){
-    const dx = event.touches[0].clientX - state.touchLastX;
-    const dy = event.touches[0].clientY - state.touchLastY;
-    const totalMoved = Math.abs(event.touches[0].clientX - state.touchStartX) + Math.abs(event.touches[0].clientY - state.touchStartY);
-    if(totalMoved > 8) state.touchMoved = true;
-    state.droneRotationY += dx * CONFIG.ROTATE_SPEED;
-    state.droneRotationX += dy * CONFIG.ROTATE_SPEED;
-    state.droneRotationX = Math.max(-Math.PI / 3, Math.min(Math.PI / 3, state.droneRotationX));
-    state.touchLastX = event.touches[0].clientX;
-    state.touchLastY = event.touches[0].clientY;
-  } else if(event.touches.length === 2 && state.isPinching){
-    const dist = getTouchDistance(event.touches[0], event.touches[1]);
-    const delta = state.pinchStartDistance - dist;
-    state.cameraDistance += delta * 0.02;
-    state.cameraDistance = Math.max(CONFIG.MIN_ZOOM, Math.min(CONFIG.MAX_ZOOM, state.cameraDistance));
-    state.pinchStartDistance = dist;
-    state.touchMoved = true;
-  }
-}
-
-function handleTouchEnd(event){
-  if(state.isTouchDragging && !state.touchMoved && state.selectedTool){
-    handleDroneClick(state.touchStartX, state.touchStartY);
-  }
-  state.isTouchDragging = false;
-  state.isPinching = false;
-}
-
-function handleDroneClick(clientX, clientY){
+function handleDroneClick(event){
   if(!state.selectedTool){ showNotification("⚠️ Сначала выберите инструмент!", 'info'); return; }
   state.totalClicks++;
-  state.mousePos.x = (clientX / window.innerWidth) * 2 - 1;
-  state.mousePos.y = -(clientY / window.innerHeight) * 2 + 1;
+  state.mousePos.x = (event.clientX / window.innerWidth) * 2 - 1;
+  state.mousePos.y = -(event.clientY / window.innerHeight) * 2 + 1;
   state.raycaster.setFromCamera(state.mousePos, camera);
   const markers = damageIndicators.map(d => d.marker);
   const intersects = state.raycaster.intersectObjects(markers, true);
@@ -1394,16 +1333,7 @@ function repairDamage(damage){
   damage.repaired = true;
   state.repairedCount++;
   const indicator = damageIndicators.find(d => d.damageId === damage.id);
-  if(indicator){ 
-    droneGroup.remove(indicator.marker); 
-    if(indicator.marker.geometry) indicator.marker.geometry.dispose();
-    if(indicator.marker.material) indicator.marker.material.dispose();
-    if(indicator.glow){
-      if(indicator.glow.geometry) indicator.glow.geometry.dispose();
-      if(indicator.glow.material) indicator.glow.material.dispose();
-    }
-    damageIndicators.splice(damageIndicators.indexOf(indicator), 1); 
-  }
+  if(indicator){ droneGroup.remove(indicator.marker); damageIndicators.splice(damageIndicators.indexOf(indicator), 1); }
   createRepairEffect(damage);
   SFX.repair();
   showNotification(`✅ Починено: ${damage.config.name}!`, 'success');
@@ -1430,23 +1360,6 @@ function createRepairEffect(damage){
         if(damage.ledIndex !== undefined && droneGroup.userData.leds[damage.ledIndex]) {
           droneGroup.userData.leds[damage.ledIndex].getWorldPosition(position);
         }
-        break;
-      case 'arm':
-        if(damage.armIndex !== undefined && armsList[damage.armIndex]) {
-          armsList[damage.armIndex].getWorldPosition(position);
-        }
-        break;
-      case 'camera':
-        const cam = droneGroup.children.find(c => c.userData.partName === 'camera');
-        if(cam) cam.getWorldPosition(position);
-        break;
-      case 'pcb':
-        const pcb = droneGroup.children.find(c => c.userData.partName === 'pcb');
-        if(pcb) pcb.getWorldPosition(position);
-        break;
-      case 'antenna':
-        const ant = droneGroup.children.find(c => c.userData.partName === 'antenna');
-        if(ant) ant.getWorldPosition(position);
         break;
     }
   } catch(e) { console.warn('Error getting repair position:', e); }
@@ -1493,19 +1406,13 @@ function fullRestart(){
   document.getElementById('victoryModal').classList.remove('show');
   state.gameCompleted = false;
   state.missionTime = 0;
+  state.selectedTool = null;
   state.droneRotationY = 0;
   state.droneRotationX = 0;
   state.cameraDistance = CONFIG.DEFAULT_ZOOM;
-  resetToolSelection();
-  damageIndicators.forEach(ind => {
-    droneGroup.remove(ind.marker);
-    if(ind.marker.geometry) ind.marker.geometry.dispose();
-    if(ind.marker.material) ind.marker.material.dispose();
-    if(ind.glow){
-      if(ind.glow.geometry) ind.glow.geometry.dispose();
-      if(ind.glow.material) ind.glow.material.dispose();
-    }
-  });
+  document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById('cursor-tool').classList.remove('active');
+  damageIndicators.forEach(ind => droneGroup.remove(ind.marker));
   damageIndicators = [];
   generateDamages();
   if(state.timerInterval) clearInterval(state.timerInterval);
@@ -1551,9 +1458,6 @@ function setupEventListeners(){
   window.addEventListener('mousemove', handleMouseMove);
   window.addEventListener('mouseup', handleMouseUp);
   window.addEventListener('wheel', handleWheel, { passive: false });
-  window.addEventListener('touchstart', handleTouchStart, { passive: false });
-  window.addEventListener('touchmove', handleTouchMove, { passive: false });
-  window.addEventListener('touchend', handleTouchEnd);
   window.addEventListener('contextmenu', (e) => { e.preventDefault(); return false; });
   document.getElementById('resetBtn').addEventListener('click', fullRestart);
   document.getElementById('exitMenuBtn').addEventListener('click', exitToMenu);
@@ -1567,9 +1471,6 @@ window.addEventListener('beforeunload', () => {
   window.removeEventListener('mousemove', handleMouseMove);
   window.removeEventListener('mouseup', handleMouseUp);
   window.removeEventListener('wheel', handleWheel);
-  window.removeEventListener('touchstart', handleTouchStart);
-  window.removeEventListener('touchmove', handleTouchMove);
-  window.removeEventListener('touchend', handleTouchEnd);
   if(audioCtx && audioCtx.state !== 'closed'){ try{ audioCtx.close(); } catch(e){} }
   if(scene){
     scene.traverse(obj => {
@@ -1582,6 +1483,27 @@ window.addEventListener('beforeunload', () => {
   }
   if(renderer) renderer.dispose();
 });
+
+// ========== СБРОС ИНСТРУМЕНТА ПРИ ВЫХОДЕ ==========
+const originalExitToMenu = exitToMenu;
+exitToMenu = function() {
+  state.selectedTool = null;
+  document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+  const cursor = document.getElementById('cursor-tool');
+  cursor.classList.remove('active');
+  cursor.innerText = '';
+  originalExitToMenu.call(this);
+};
+
+const originalFullRestart = fullRestart;
+fullRestart = function() {
+  state.selectedTool = null;
+  document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+  const cursor = document.getElementById('cursor-tool');
+  cursor.classList.remove('active');
+  cursor.innerText = '';
+  originalFullRestart.call(this);
+};
 </script>
 </body>
 </html>
